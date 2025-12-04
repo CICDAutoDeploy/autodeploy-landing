@@ -1,4 +1,3 @@
-import React from "react";
 
 export default function App() {
   return (
@@ -222,7 +221,15 @@ function HowItWorks() {
   );
 }
 
-function Step({ number, title, text }) {
+function Step({
+  number,
+  title,
+  text,
+}: {
+  number: string | number;
+  title: string;
+  text: string;
+}) {
   return (
     <div className="w-1/3 flex flex-col items-center gap-4 text-center">
       <div className="size-12 rounded-full bg-primary text-white flex items-center justify-center border-4 border-background-light dark:border-background-dark font-bold">
