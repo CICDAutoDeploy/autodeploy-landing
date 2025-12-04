@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { joinWaitlist } from "./lib/supabase";
+import PrivacyPage from "./pages/Privacy";
+import TermsPage from "./pages/Terms";
+import ContactPage from "./pages/Contact";
 
 export default function App() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [page, setPage] = useState<"home" | "privacy" | "terms" | "contact">("home");
 
   // Expose global toast trigger
   // @ts-ignore
@@ -22,24 +26,32 @@ export default function App() {
           {toast.message}
         </div>
       )}
-      <Navbar />
-      <main className="flex flex-col gap-24 pb-16">
-        <Hero />
-        <ProblemSolution />
-        <Features />
-        <HowItWorks />
-        <Team />
-        <CTA />
-      </main>
-      <Footer />
+      <Navbar setPage={setPage} />
+      {page === "home" && (
+        <main className="flex flex-col gap-24 pb-16">
+          <Hero />
+          <ProblemSolution />
+          <Features />
+          <HowItWorks />
+          <Team />
+          <CTA />
+        </main>
+      )}
+      {page === "privacy" && <PrivacyPage />}
+      {page === "terms" && <TermsPage />}
+      {page === "contact" && <ContactPage />}
+      <Footer setPage={setPage} />
     </div>
   );
 }
 
-function Navbar() {
+function Navbar({ setPage }: { setPage: (page: "home" | "privacy" | "terms" | "contact") => void }) {
   return (
     <header className="flex items-center justify-between border-b border-border-light dark:border-border-dark px-4 md:px-10 py-4">
-      <div className="flex items-center gap-3">
+      <div
+        className="flex items-center gap-3 cursor-pointer"
+        onClick={() => setPage("home")}
+      >
         <div className="size-6 text-primary">
           <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -66,7 +78,10 @@ function Navbar() {
 
         <button
           className="h-10 px-4 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark font-bold text-sm"
-          onClick={() => (window.location.href = "https://app.autodeploy.dev")}
+          onClick={() => {
+            // @ts-ignore
+            window.showToast("The app isn't live yet. Please try again later!", "error");
+          }}
         >
           Sign In
         </button>
@@ -413,7 +428,7 @@ function CTA() {
   );
 }
 
-function Footer() {
+function Footer({ setPage }: { setPage: (page: "home" | "privacy" | "terms" | "contact") => void }) {
   return (
     <footer className="mt-16 border-t border-border-light dark:border-border-dark px-4 md:px-10 py-10">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -432,24 +447,24 @@ function Footer() {
         </div>
 
         <div className="flex gap-6">
-          <a
-            href="#"
+          <button
+            onClick={() => setPage("terms")}
             className="text-sm text-text-light/70 dark:text-text-dark/70 hover:text-primary"
           >
             Terms
-          </a>
-          <a
-            href="#"
+          </button>
+          <button
+            onClick={() => setPage("privacy")}
             className="text-sm text-text-light/70 dark:text-text-dark/70 hover:text-primary"
           >
             Privacy
-          </a>
-          <a
-            href="#"
+          </button>
+          <button
+            onClick={() => setPage("contact")}
             className="text-sm text-text-light/70 dark:text-text-dark/70 hover:text-primary"
           >
             Contact
-          </a>
+          </button>
         </div>
       </div>
     </footer>
