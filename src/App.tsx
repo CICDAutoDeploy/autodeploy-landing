@@ -1,7 +1,27 @@
+import { useState } from "react";
+import { joinWaitlist } from "./lib/supabase";
 
 export default function App() {
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  // Expose global toast trigger
+  // @ts-ignore
+  window.showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   return (
     <div className="relative flex min-h-screen w-full flex-col">
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white font-medium z-50 ${
+            toast.type === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
       <Navbar />
       <main className="flex flex-col gap-24 pb-16">
         <Hero />
@@ -59,6 +79,35 @@ function Navbar() {
 }
 
 function Hero() {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+
+  const handleJoin = async () => {
+    setError("");
+
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    const result = await joinWaitlist(email);
+    if (result.success) {
+      setEmail("");
+      setError("");
+      // @ts-ignore
+      window.showToast("You're on the waitlist!", "success");
+    } else {
+      // @ts-ignore
+      window.showToast("Something went wrong. Please try again.", "error");
+    }
+  };
+
   return (
     <section className="px-4 md:px-10 mt-16 md:mt-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
@@ -71,12 +120,27 @@ function Hero() {
             GitHub OAuth, AWS OIDC, and natural-language automation. No YAML
             guesswork. No DevOps barriers. Just automation that works.
           </p>
-          <button
-            className="h-12 px-6 max-w-xs rounded-lg bg-primary text-white text-base font-bold"
-            onClick={() => (window.location.href = "/waitlist")}
-          >
-            Join the Waitlist
-          </button>
+          <div className="flex flex-col gap-3 max-w-xs">
+            {error && (
+              <div className="text-red-500 text-sm font-medium">
+                {error}
+              </div>
+            )}
+            <input
+              className={`h-12 px-4 border rounded-lg bg-card-light dark:bg-card-dark ${
+                error ? "border-red-500" : "border-border-light dark:border-border-dark"
+              }`}
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <button
+              className="h-12 px-6 rounded-lg bg-primary text-white text-base font-bold"
+              onClick={handleJoin}
+            >
+              Join the Waitlist
+            </button>
+          </div>
         </div>
 
         <div className="rounded-xl overflow-hidden shadow-xl bg-card-light dark:bg-card-dark aspect-video flex items-center justify-center">
@@ -274,7 +338,7 @@ function Team() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center mx-auto w-full max-w-6xl">
         {team.map((member) => (
           <div
             key={member.name}
@@ -309,12 +373,41 @@ function CTA() {
         <p className="text-lg text-text-light/80 dark:text-text-dark/80 max-w-2xl">
           Join the waitlist and get early access to the MCP-powered CI/CD builder.
         </p>
-        <button
-          className="h-12 px-6 max-w-xs rounded-lg bg-primary text-white font-bold text-base"
-          onClick={() => (window.location.href = "/waitlist")}
-        >
-          Join the Waitlist
-        </button>
+
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md">
+          <input
+            id="ctaEmailInput"
+            className="h-12 flex-1 px-4 border rounded-lg bg-card-light dark:bg-card-dark border-border-light dark:border-border-dark"
+            placeholder="Enter your email"
+            type="email"
+          />
+          <button
+            className="h-12 px-6 rounded-lg bg-primary text-white font-bold text-base whitespace-nowrap"
+            onClick={async () => {
+              const input = document.getElementById("ctaEmailInput") as HTMLInputElement | null;
+              const email = input?.value ?? "";
+
+              const isValid = /\S+@\S+\.\S+/.test(email);
+              if (!isValid) {
+                // @ts-ignore
+                window.showToast("Please enter a valid email address.", "error");
+                return;
+              }
+
+              const result = await joinWaitlist(email);
+              if (result?.success) {
+                if (input) input.value = "";
+                // @ts-ignore
+                window.showToast("You're on the waitlist!", "success");
+              } else {
+                // @ts-ignore
+                window.showToast("Something went wrong. Please try again.", "error");
+              }
+            }}
+          >
+            Join
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -334,7 +427,7 @@ function Footer() {
             </svg>
           </div>
           <p className="text-sm text-text-light/70 dark:text-text-dark/70">
-            © 2024 AutoDeploy. All rights reserved.
+            © 2025 AutoDeploy. All rights reserved.
           </p>
         </div>
 
