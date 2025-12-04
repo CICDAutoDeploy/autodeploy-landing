@@ -1,75 +1,98 @@
-# React + TypeScript + Vite
+# AutoDeploy Landing Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive marketing site for **AutoDeploy** — the AI‑powered CI/CD automation platform.
 
-Currently, two official plugins are available:
+Built with:
+- **React + TypeScript**
+- **Vite**
+- **TailwindCSS (via CDN)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is a standalone marketing website that will be deployed to `autodeploy.app` and linked to the main MCP dashboard.
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## 🚀 Features
+- Clean, responsive UI
+- Hero section, feature breakdown, team section, and CTA
+- Configurable branding for AutoDeploy
+- “Sign In” button linking to the live dashboard (`https://app.autodeploy.dev`)
+- “Join the Waitlist” button routing to `/waitlist` (Supabase‑backed form coming next)
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 Project Structure
+```
+autodeploy-landing/
+ ├─ src/
+ │   ├─ App.tsx        # Main landing page
+ │   ├─ main.tsx       # Entry point
+ │   └─ assets/        # Images, icons (optional)
+ ├─ index.html         # Tailwind config + root mount
+ ├─ package.json
+ ├─ vite.config.ts
+ └─ README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Development
+Start the dev server:
+```bash
+npm install
+npm run dev
 ```
+Open the site at:
+```
+http://localhost:5173
+```
+
+---
+
+## 🔧 Build for Production
+```bash
+npm run build
+```
+Output goes to `dist/`.
+
+To preview the production build:
+```bash
+npm run preview
+```
+
+---
+
+## 🌐 Deployment
+This repo will be deployed to:
+```
+https://autodeploy.app
+```
+
+Supports hosting on:
+- Vercel
+- Netlify
+- Cloudflare Pages (recommended since the domain is on Cloudflare)
+
+---
+
+## 🔗 Environment / Links
+- Dashboard: `https://app.autodeploy.dev`
+- Waitlist route (to be implemented): `/waitlist`
+
+---
+
+## 👥 Team
+- **Paython Veazie** – Lead Engineer
+- **Lorenc Dedaj** – Backend Engineer
+- **Victoria Williams** – UX / Frontend Engineer
+
+---
+
+## 📌 Next Steps
+- Add `/waitlist` page
+- Integrate Supabase waitlist table
+- Add analytics (Umami, Plausible, or Cloudflare analytics)
+- Add SEO metadata and OpenGraph banners
+
+---
+
+If you are contributing to this repo, feel free to open PRs under the `autodeploy-app` organization.
