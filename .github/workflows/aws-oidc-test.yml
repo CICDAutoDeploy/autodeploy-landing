@@ -1,0 +1,32 @@
+name: AWS OIDC Test
+
+on:
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write      # REQUIRED for OIDC
+  contents: read       # Needed for checkout
+
+jobs:
+  test-oidc:
+    name: Test AWS OIDC Role
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Configure AWS credentials via GitHub OIDC
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::013049518743:role/github-actions-autodeploy-landing
+        role-session-name: GitHubActions
+        aws-region: us-east-1
+
+    # Verify identity
+    - name: Verify OIDC Identity
+      run: aws sts get-caller-identity
