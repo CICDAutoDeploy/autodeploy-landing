@@ -326,17 +326,17 @@ function Team() {
   const team = [
     {
       name: "Paython Veazie",
-      role: "Lead Engineer",
+      role: "Full Stack",
       bio: "Architect of MCP flows, GitHub OAuth, and pipeline automation.",
     },
     {
       name: "Lorenc Dedaj",
-      role: "Backend Engineer",
+      role: "Full Stack",
       bio: "Supabase, API routing, connection flows, and sessions.",
     },
     {
       name: "Victoria Williams",
-      role: "UX / Frontend",
+      role: "Full Stack",
       bio: "UI architecture, wizard flow, state management, and polish.",
     },
   ];
