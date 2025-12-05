@@ -326,18 +326,18 @@ function Team() {
   const team = [
     {
       name: "Paython Veazie",
-      role: "Full Stack",
-      bio: "Architect of MCP flows, GitHub OAuth, and pipeline automation.",
+      role: "Founding Engineer",
+      bio: "Contributes to MCP flows, AI Wizard design, API routing, session handling, and deployment automations across AWS.",
     },
     {
       name: "Lorenc Dedaj",
-      role: "Full Stack",
-      bio: "Supabase, API routing, connection flows, and sessions.",
+      role: "Founding Engineer",
+      bio: "Leads work on Supabase integration, GitHub OAuth flows, GitHub Actions generation, and Google Cloud deployment automation.",
     },
     {
       name: "Victoria Williams",
-      role: "Full Stack",
-      bio: "UI architecture, wizard flow, state management, and polish.",
+      role: "Founding Engineer",
+      bio: "Drives UI architecture, front-end system design, state management strategy, and overall product polish.",
     },
   ];
 
