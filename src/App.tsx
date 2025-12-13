@@ -60,7 +60,7 @@ function Navbar({ setPage }: { setPage: (page: "home" | "privacy" | "terms" | "c
             />
           </svg>
         </div>
-        <h2 className="text-lg font-bold">AutoDeploy</h2>
+        <h2 className="text-lg font-bold">AutoDeploy Team</h2>
       </div>
 
       <div className="flex gap-3 md:gap-8 items-center">
