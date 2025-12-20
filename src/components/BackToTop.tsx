@@ -13,7 +13,6 @@ export default function BackToTop({
 
   useEffect(() => {
     if (!enabled) {
-      setVisible(false);
       return;
     }
 

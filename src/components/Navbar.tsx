@@ -24,7 +24,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
 
   useEffect(() => {
     if (page !== "home") {
-      setActiveSection("home");
+      setTimeout(() => setActiveSection("home"), 0);
       return;
     }
 
@@ -42,7 +42,10 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             if (window.scrollY < 100) {
               setActiveSection("home");
             } else {
-              setActiveSection(entry.target.id as any);
+              const id = entry.target.id;
+              if (id === "features" || id === "how" || id === "team") {
+                setActiveSection(id);
+              }
             }
           }
         });
@@ -75,8 +78,12 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   }, [page]);
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [page]);
+    // Only attempt to close the mobile menu if it's currently open,
+    // and schedule the state change asynchronously to avoid cascading renders.
+    if (!mobileOpen) return;
+    const t = setTimeout(() => setMobileOpen(false), 0);
+    return () => clearTimeout(t);
+  }, [page, mobileOpen]);
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-white border-b border-border">
