@@ -1,8 +1,8 @@
-
+type Page = "home" | "privacy" | "terms" | "contact";
 
 type NavbarProps = {
-  page: string;
-  setPage: (page: string) => void;
+  page: Page;
+  setPage: (page: Page) => void;
 };
 
 export default function Navbar({ page, setPage }: NavbarProps) {

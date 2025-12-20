@@ -1,5 +1,7 @@
+type Page = "home" | "privacy" | "terms" | "contact";
+
 type FooterProps = {
-  setPage: (page: "home" | "privacy" | "terms" | "contact") => void;
+  setPage: (page: Page) => void;
 };
 
 export default function Footer({ setPage }: FooterProps) {
