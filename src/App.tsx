@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Team from "./components/Team";
 import Footer from "./components/Footer";
 import { useWaitlist } from "./hooks/useWaitlist";
@@ -11,6 +11,7 @@ import Features from "./components/Features";
 import HowItWorks from "./components/HowItWorks";
 import CTA from "./components/CTA";
 import ProblemSolution from "./components/ProblemSolution";
+import BackToTop from "./components/BackToTop";
 
 
 export default function App() {
@@ -51,6 +52,7 @@ export default function App() {
       {page === "terms" && <TermsPage />}
       {page === "contact" && <ContactPage />}
       <Footer setPage={setPage} />
+      <BackToTop enabled={page === "home"} />
     </div>
   );
 }
