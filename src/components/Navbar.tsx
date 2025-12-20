@@ -42,10 +42,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             if (window.scrollY < 100) {
               setActiveSection("home");
             } else {
-              const id = entry.target.id;
-              if (id === "features" || id === "how" || id === "team") {
-                setActiveSection(id);
-              }
+              setActiveSection(entry.target.id as any);
             }
           }
         });
@@ -78,12 +75,11 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   }, [page]);
 
   useEffect(() => {
-    // Only attempt to close the mobile menu if it's currently open,
-    // and schedule the state change asynchronously to avoid cascading renders.
+    // Close the mobile menu when the page changes, if it's currently open.
     if (!mobileOpen) return;
     const t = setTimeout(() => setMobileOpen(false), 0);
     return () => clearTimeout(t);
-  }, [page, mobileOpen]);
+  }, [page]);
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-white border-b border-border">
@@ -120,8 +116,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               page === "home" && activeSection === "home"
-                ? "bg-brand/10 text-brand"
-                : "text-text hover:bg-surface-muted hover:text-brand"
+                ? "bg-blue-100 text-blue-600"
+                : "text-text hover:bg-blue-100 hover:text-blue-600"
             }`}
           >
             Home
@@ -137,8 +133,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               activeSection === "features"
-                ? "bg-brand/10 text-brand"
-                : "text-text hover:bg-surface-muted hover:text-brand"
+                ? "bg-blue-100 text-blue-600"
+                : "text-text hover:bg-blue-100 hover:text-blue-600"
             }`}
           >
             Features
@@ -154,8 +150,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               activeSection === "how"
-                ? "bg-brand/10 text-brand"
-                : "text-text hover:bg-surface-muted hover:text-brand"
+                ? "bg-blue-100 text-blue-600"
+                : "text-text hover:bg-blue-100 hover:text-blue-600"
             }`}
           >
             How it works
@@ -171,8 +167,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               activeSection === "team"
-                ? "bg-brand/10 text-brand"
-                : "text-text hover:bg-surface-muted hover:text-brand"
+                ? "bg-blue-100 text-blue-600"
+                : "text-text hover:bg-blue-100 hover:text-blue-600"
             }`}
           >
             Team
@@ -181,8 +177,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             onClick={() => setPage("contact")}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               page === "contact"
-                ? "bg-brand/10 text-brand"
-                : "text-text hover:bg-surface-muted hover:text-brand"
+                ? "bg-blue-100 text-blue-600"
+                : "text-text hover:bg-blue-100 hover:text-blue-600"
             }`}
           >
             Contact
@@ -221,8 +217,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "home" && page === "home"
-                  ? "bg-brand/10 text-brand"
-                  : "text-text hover:bg-surface-muted hover:text-brand"
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-text hover:bg-blue-100 hover:text-blue-600"
               }`}
             >
               Home
@@ -240,8 +236,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "features" && page === "home"
-                  ? "bg-brand/10 text-brand"
-                  : "text-text hover:bg-surface-muted hover:text-brand"
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-text hover:bg-blue-100 hover:text-blue-600"
               }`}
             >
               Features
@@ -259,8 +255,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "how" && page === "home"
-                  ? "bg-brand/10 text-brand"
-                  : "text-text hover:bg-surface-muted hover:text-brand"
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-text hover:bg-blue-100 hover:text-blue-600"
               }`}
             >
               How it works
@@ -278,8 +274,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "team" && page === "home"
-                  ? "bg-brand/10 text-brand"
-                  : "text-text hover:bg-surface-muted hover:text-brand"
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-text hover:bg-blue-100 hover:text-blue-600"
               }`}
             >
               Team
@@ -292,8 +288,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 page === "contact"
-                  ? "bg-brand/10 text-brand"
-                  : "text-text hover:bg-surface-muted hover:text-brand"
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-text hover:bg-blue-100 hover:text-blue-600"
               }`}
             >
               Contact

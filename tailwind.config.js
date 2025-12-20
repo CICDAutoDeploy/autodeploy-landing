@@ -8,15 +8,34 @@ export default {
     extend: {
       colors: {
         /* Base surfaces */
-        bg: "rgb(var(--color-bg) / <alpha-value>)",
+        bg: {
+          DEFAULT: "rgb(var(--color-bg) / <alpha-value>)",
+          light: "rgb(var(--color-bg-light) / <alpha-value>)",
+          dark: "rgb(var(--color-bg-dark) / <alpha-value>)",
+        },
         surface: "rgb(var(--color-surface) / <alpha-value>)",
-        border: "rgb(var(--color-border) / <alpha-value>)",
+        "surface-muted": "rgb(var(--color-surface-muted) / <alpha-value>)",
+
+        /* Cards */
+        card: {
+          light: "rgb(var(--color-card-light) / <alpha-value>)",
+          dark: "rgb(var(--color-card-dark) / <alpha-value>)",
+        },
+
+        /* Borders */
+        border: {
+          DEFAULT: "rgb(var(--color-border) / <alpha-value>)",
+          light: "rgb(var(--color-border-light) / <alpha-value>)",
+          dark: "rgb(var(--color-border-dark) / <alpha-value>)",
+        },
 
         /* Text */
         text: {
           primary: "rgb(var(--color-text-primary) / <alpha-value>)",
           secondary: "rgb(var(--color-text-secondary) / <alpha-value>)",
           muted: "rgb(var(--color-text-muted) / <alpha-value>)",
+          light: "rgb(var(--color-text-light) / <alpha-value>)",
+          dark: "rgb(var(--color-text-dark) / <alpha-value>)",
         },
 
         /* Brand */
@@ -26,6 +45,9 @@ export default {
           hover: "rgb(var(--color-brand-hover) / <alpha-value>)",
           accent: "rgb(var(--color-accent) / <alpha-value>)",
         },
+
+        /* Primary (matches bg-primary, text-primary, focus:ring-primary) */
+        primary: "rgb(var(--color-primary) / <alpha-value>)",
 
         /* Status */
         danger: "rgb(var(--color-danger) / <alpha-value>)",
