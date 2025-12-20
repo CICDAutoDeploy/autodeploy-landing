@@ -1,0 +1,20 @@
+:root {
+  /* Brand */
+  --color-brand: 37 99 235;        /* blue-600 */
+  --color-brand-strong: 29 78 216; /* blue-700 */
+  --color-brand-hover: 59 130 246; /* blue-500 */
+  --color-accent: 56 189 248;
+
+  /* Backgrounds / surfaces */
+  --color-bg: 255 255 255;
+  --color-surface: 255 255 255;
+  --color-surface-muted: 243 244 246;
+
+  /* Text */
+  --color-text: 17 24 39;
+  --color-text-muted: 107 114 128;
+
+  /* Borders / focus */
+  --color-border: 229 231 235;
+  --color-focus: 37 99 235;
+}
