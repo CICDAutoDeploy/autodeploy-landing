@@ -30,7 +30,7 @@ export default function BackToTop({
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
-      className={`fixed bottom-6 right-6 z-50 rounded-full bg-primary p-3 text-white shadow-lg transition-all duration-300 ease-out hover:opacity-90
+      className={`fixed bottom-6 right-6 z-50 rounded-full border border-white/30 bg-white/10 text-slate-100 p-3 shadow-glass backdrop-blur-md transition-all duration-300 ease-out hover:bg-white/20
         ${visible ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0 translate-y-3"}`}
     >
       <svg

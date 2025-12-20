@@ -54,16 +54,13 @@ const features: Feature[] = [
 
 export default function Features() {
   return (
-    <section
-      id="features"
-      className="py-24 bg-bg-light dark:bg-bg-dark"
-    >
+    <section id="features" className="py-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold mb-4">
+          <h2 className="text-4xl font-extrabold mb-4 text-white">
             Features that scale with your workflow
           </h2>
-          <p className="text-lg text-text-light/70 dark:text-text-dark/70 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-200/80 max-w-2xl mx-auto">
             AutoDeploy focuses on the hardest parts of CI/CD so your team can
             focus on shipping.
           </p>
@@ -73,20 +70,19 @@ export default function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group p-6 bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl
-                         transition-all duration-200 ease-out
-                         hover:-translate-y-1 hover:shadow-lg hover:border-primary/40"
+              className="group p-6 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md shadow-glass
+                         transition-all duration-200 ease-out hover:-translate-y-1 hover:border-white/40"
             >
               <div className="flex items-center gap-3 mb-3">
                 <feature.icon
-                  className="h-6 w-6 text-primary flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  className="h-6 w-6 text-emerald-300 flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
                   aria-hidden="true"
                 />
-                <h3 className="text-xl font-bold">
+                <h3 className="text-xl font-bold text-white">
                   {feature.title}
                 </h3>
               </div>
-              <p className="text-text-light/70 dark:text-text-dark/70">
+              <p className="text-slate-200/80">
                 {feature.description}
               </p>
             </div>

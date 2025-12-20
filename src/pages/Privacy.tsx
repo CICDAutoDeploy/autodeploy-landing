@@ -1,13 +1,13 @@
 export default function PrivacyPage() {
   return (
-    <div className="px-4 md:px-10 py-20 max-w-3xl mx-auto">
-      <h1 className="text-4xl font-bold mb-6">Privacy Policy</h1>
+    <div className="px-4 md:px-10 py-24 max-w-3xl mx-auto">
+      <h1 className="text-4xl font-bold mb-6 text-white">Privacy Policy</h1>
 
-      <p className="text-sm text-text-light/60 dark:text-text-dark/60 mb-4">
+      <p className="text-sm text-slate-300 mb-4">
         Last Updated: January 2025
       </p>
 
-      <div className="flex flex-col gap-4 text-base leading-7 text-text-light/80 dark:text-text-dark/80">
+      <div className="flex flex-col gap-4 text-base leading-7 text-slate-200/80 bg-white/5 border border-white/15 rounded-2xl backdrop-blur-md shadow-glass p-6 md:p-8">
         <p>
           AutoDeploy (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is committed to
           protecting your privacy. This Privacy Policy explains how we collect,

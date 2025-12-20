@@ -62,11 +62,11 @@ const team: TeamMember[] = [
 
 export default function Team() {
   return (
-    <section id="team" className="py-24 bg-bg-light dark:bg-bg-dark">
+    <section id="team" className="py-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold mb-4">The AutoDeploy Team</h2>
-          <p className="text-lg text-text-light/70 dark:text-text-dark/70 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-extrabold mb-4 text-white">The AutoDeploy Team</h2>
+          <p className="text-lg text-slate-200/80 max-w-2xl mx-auto">
             Built by engineers who care deeply about developer experience,
             reliability, and real-world deployment workflows.
           </p>
@@ -76,9 +76,9 @@ export default function Team() {
           {team.map((member) => (
             <div
               key={member.name}
-              className="p-6 bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl flex flex-col items-center text-center gap-4 transition-transform duration-200 hover:-translate-y-1"
+              className="p-6 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md shadow-glass flex flex-col items-center text-center gap-4 transition-transform duration-200 hover:-translate-y-1 hover:border-white/40"
             >
-              <div className="w-32 h-32 rounded-full overflow-hidden bg-border-light dark:bg-border-dark ring-2 ring-transparent hover:ring-primary transition-shadow duration-200">
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-white/10 ring-2 ring-white/20 shadow-glass">
                 <img
                   src={member.image}
                   alt={member.name}
@@ -87,21 +87,21 @@ export default function Team() {
               </div>
 
               <div>
-                <h3 className="text-xl font-bold">{member.name}</h3>
-                <p className="text-primary text-sm font-medium">
+                <h3 className="text-xl font-bold text-white">{member.name}</h3>
+                <p className="text-emerald-300 text-sm font-medium">
                   {member.role}
                 </p>
-                <p className="text-sm text-text-light/70 dark:text-text-dark/70 mt-2">
+                <p className="text-sm text-slate-200/80 mt-2">
                   {member.bio}
                 </p>
 
-                <div className="flex gap-4 mt-3 text-primary justify-center">
+                <div className="flex gap-4 mt-3 justify-center text-slate-200/80">
                   {member.github && (
                     <a
                       href={member.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-primary/80 transition-colors"
+                      className="hover:text-white transition-colors"
                       aria-label="GitHub profile"
                     >
                       <GitHubIcon className="w-5 h-5" />
@@ -112,7 +112,7 @@ export default function Team() {
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-primary/80 transition-colors"
+                      className="hover:text-white transition-colors"
                       aria-label="LinkedIn profile"
                     >
                       <LinkedInIcon className="w-5 h-5" />

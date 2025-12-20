@@ -82,7 +82,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   }, [page]);
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 bg-white border-b border-border">
+    <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/15 bg-white/5 backdrop-blur">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo / Brand */}
         <button
@@ -96,7 +96,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
-          className="text-xl font-extrabold tracking-tight text-text"
+          className="text-xl font-extrabold tracking-tight text-white"
         >
           AutoDeploy
         </button>
@@ -116,8 +116,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               page === "home" && activeSection === "home"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
+                ? "text-white bg-white/20"
+                : "text-slate-200/80 hover:text-white hover:bg-white/10"
             }`}
           >
             Home
@@ -133,8 +133,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               activeSection === "features"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
+                ? "text-white bg-white/20"
+                : "text-slate-200/80 hover:text-white hover:bg-white/10"
             }`}
           >
             Features
@@ -150,8 +150,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               activeSection === "how"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
+                ? "text-white bg-white/20"
+                : "text-slate-200/80 hover:text-white hover:bg-white/10"
             }`}
           >
             How it works
@@ -167,8 +167,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               activeSection === "team"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
+                ? "text-white bg-white/20"
+                : "text-slate-200/80 hover:text-white hover:bg-white/10"
             }`}
           >
             Team
@@ -177,8 +177,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             onClick={() => setPage("contact")}
             className={`px-3 py-1.5 rounded-md transition-colors ${
               page === "contact"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
+                ? "text-white bg-white/20"
+                : "text-slate-200/80 hover:text-white hover:bg-white/10"
             }`}
           >
             Contact
@@ -186,7 +186,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
         </div>
         <button
           onClick={() => setMobileOpen((open) => !open)}
-          className="md:hidden p-2 rounded-md hover:bg-surface-muted"
+          className="md:hidden p-2 rounded-md hover:bg-white/10 text-slate-100"
           aria-label="Toggle menu"
         >
           {mobileOpen ? (
@@ -198,13 +198,13 @@ export default function Navbar({ page, setPage }: NavbarProps) {
       </div>
       {(
         <div
-          className={`md:hidden fixed top-16 right-4 z-40 bg-white border border-border shadow-xl rounded-2xl w-fit min-w-[1rem] overflow-hidden transform transition-all duration-300 ease-out ${
+          className={`md:hidden fixed top-16 right-4 z-40 bg-white/10 border border-white/20 rounded-2xl w-fit min-w-[1rem] overflow-hidden transform transition-all duration-300 ease-out shadow-glass backdrop-blur-md ${
             mobileOpen
               ? "translate-x-0 opacity-100"
               : "translate-x-8 opacity-0 pointer-events-none"
           }`}
         >
-          <div className="px-6 py-5 flex flex-col gap-4 text-sm font-medium items-end text-right text-text whitespace-nowrap">
+          <div className="px-6 py-5 flex flex-col gap-4 text-sm font-medium items-end text-right text-slate-100 whitespace-nowrap">
             <button
               onClick={() => {
                 setMobileOpen(false);
@@ -217,8 +217,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "home" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
+                  ? "text-white bg-white/20"
+                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Home
@@ -236,8 +236,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "features" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
+                  ? "text-white bg-white/20"
+                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Features
@@ -255,8 +255,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "how" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
+                  ? "text-white bg-white/20"
+                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
               }`}
             >
               How it works
@@ -274,8 +274,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 activeSection === "team" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
+                  ? "text-white bg-white/20"
+                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Team
@@ -288,8 +288,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 page === "contact"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
+                  ? "text-white bg-white/20"
+                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Contact
@@ -299,7 +299,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
       )}
       {mobileOpen && (
         <div
-          className="md:hidden fixed inset-0 z-30 bg-white/80"
+          className="md:hidden fixed inset-0 z-30 bg-black/60"
           onClick={() => setMobileOpen(false)}
         />
       )}

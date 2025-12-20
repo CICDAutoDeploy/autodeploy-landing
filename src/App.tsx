@@ -36,19 +36,32 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col">
+    <div className="relative min-h-screen w-full text-slate-100 overflow-hidden">
+      {/* Gradient base */}
+      <div className="fixed inset-0 -z-20 bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900" />
+
+      {/* Dark veil for contrast */}
+      <div className="fixed inset-0 -z-10 bg-black/20" />
+
+      {/* Frosted glass shimmer */}
+      <div className="fixed inset-0 -z-10 bg-white/10 backdrop-blur-3xl pointer-events-none" />
+
       {toast && (
         <div
-          className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white font-medium z-50 ${
-            toast.type === "success" ? "bg-green-600" : "bg-red-600"
+          className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg font-medium z-50 ${
+            toast.type === "success"
+              ? "bg-emerald-500 text-emerald-50"
+              : "bg-red-500 text-red-50"
           }`}
         >
           {toast.message}
         </div>
       )}
+
       <Navbar page={page} setPage={setPage} />
+
       {page === "home" && (
-        <main className="flex flex-col gap-24 pb-16">
+        <main className="relative z-0 flex flex-col gap-24 pb-16 pt-24">
           <Hero {...waitlist} />
           <ProblemSolution />
           <Features />
@@ -57,9 +70,11 @@ export default function App() {
           <CTA {...waitlist} />
         </main>
       )}
+
       {page === "privacy" && <PrivacyPage />}
       {page === "terms" && <TermsPage />}
       {page === "contact" && <ContactPage />}
+
       <Footer setPage={setPage} />
       <BackToTop enabled={page === "home"} />
     </div>
