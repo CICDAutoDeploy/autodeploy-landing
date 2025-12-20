@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Team from "./components/Team";
 import Footer from "./components/Footer";
 import { useWaitlist } from "./hooks/useWaitlist";
