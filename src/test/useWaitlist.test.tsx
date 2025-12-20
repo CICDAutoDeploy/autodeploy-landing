@@ -5,7 +5,7 @@ import { useWaitlist } from '../hooks/useWaitlist';
 declare global {
   interface Window {
     joinWaitlist?: (email: string) => Promise<{ success: boolean } | { success: boolean; error?: string }>;
-    showToast?: (message: string, type: 'success' | 'error') => void;
+    showToast?: (message: string, type?: 'success' | 'error') => void;
   }
 }
 

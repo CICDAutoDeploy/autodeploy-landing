@@ -14,8 +14,6 @@ beforeEach(() => {
     readonly rootMargin: string = '';
     readonly thresholds: ReadonlyArray<number> = [];
 
-    constructor(public callback: IntersectionObserverCallback) {}
-
     observe = vi.fn();
     unobserve = vi.fn();
     disconnect = vi.fn();

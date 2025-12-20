@@ -7,11 +7,6 @@ class IntersectionObserverStub implements IntersectionObserver {
   readonly rootMargin = '';
   readonly thresholds: ReadonlyArray<number> = [];
 
-  constructor(
-    private callback: IntersectionObserverCallback,
-    _options?: IntersectionObserverInit,
-  ) {}
-
   observe(_target: Element) {}
   unobserve(_target: Element) {}
   disconnect() {}
