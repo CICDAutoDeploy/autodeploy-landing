@@ -56,7 +56,7 @@ const team: TeamMember[] = [
     bio: "Drives UI architecture, front-end system design, state management strategy, and overall product polish.",
     image: "/team/victoria.png",
     github: "https://github.com/williams21v",
-    linkedin: null,
+    linkedin: "https://www.linkedin.com/in/victoria-williams-/",
   },
 ];
 
