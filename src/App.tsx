@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Team from "./components/Team";
 import Footer from "./components/Footer";
 import { useWaitlist } from "./hooks/useWaitlist";
@@ -11,19 +11,29 @@ import Features from "./components/Features";
 import HowItWorks from "./components/HowItWorks";
 import CTA from "./components/CTA";
 import ProblemSolution from "./components/ProblemSolution";
+import BackToTop from "./components/BackToTop";
 
+declare global {
+  interface Window {
+    showToast?: (message: string, type?: "success" | "error") => void;
+  }
+}
 
 export default function App() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [page, setPage] = useState<"home" | "privacy" | "terms" | "contact">("home");
   const waitlist = useWaitlist();
 
-  // Expose global toast trigger
-  // @ts-ignore
-  window.showToast = (message: string, type: "success" | "error" = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  // Expose global toast trigger via effect and clean up on unmount
+  useEffect(() => {
+    window.showToast = (message: string, type: "success" | "error" = "success") => {
+      setToast({ message, type });
+      setTimeout(() => setToast(null), 3000);
+    };
+    return () => {
+      delete window.showToast;
+    };
+  }, []);
 
   return (
     <div className="relative flex min-h-screen w-full flex-col">
@@ -51,6 +61,7 @@ export default function App() {
       {page === "terms" && <TermsPage />}
       {page === "contact" && <ContactPage />}
       <Footer setPage={setPage} />
+      <BackToTop enabled={page === "home"} />
     </div>
   );
 }
