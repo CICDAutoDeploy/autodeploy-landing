@@ -54,17 +54,16 @@
 
   .docs-search-open #docs-scroll::before {
     content: "";
-    /* Fixed so it always covers the full viewport height, regardless of the
-       scroll container height or devtools resizing. */
+    /* Fixed so the overlay always covers the visible docs viewport while scrolling. */
     position: fixed;
-    /* Start just below the navbar (h-16 => 4rem) so the nav stays clear. */
+    /* Align with the docs area under the navbar. */
     top: 4rem;
     bottom: 0;
-    /* Leave space for the left docs sidebar + right "On this page" column. */
-    left: clamp(11rem, 16vw, 18rem);
-    right: clamp(11rem, 16vw, 18rem);
-    /* Match navbar-style glass: subtle light tint + strong blur over the
-       gradient. */
+    /* Match the center column between sidebar and "On this page" panel.
+       Slightly reduce the gutters so the blur reaches the start of the text
+       column, accounting for grid gap + inner padding. */
+    left: clamp(8rem, 10vw, 15rem);
+    right: clamp(10rem, 15vw, 17rem);
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(18px);
     pointer-events: none;
