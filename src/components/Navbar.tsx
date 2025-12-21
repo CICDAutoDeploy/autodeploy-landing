@@ -184,6 +184,9 @@ export default function Navbar({ page, setPage }: NavbarProps) {
 
   const openDocsSearch = () => {
     setDocsSearchOpen(true);
+    // Add a global class so the docs layout can react (e.g., dim/overlay the middle content).
+    document.documentElement.classList.add("docs-search-open");
+
     setTimeout(() => {
       const input = document.getElementById("docs-search-input") as
         | HTMLInputElement
@@ -195,6 +198,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   const closeDocsSearch = () => {
     setDocsSearchOpen(false);
     setDocsSearchQuery("");
+    document.documentElement.classList.remove("docs-search-open");
   };
 
   const navigateToDoc = (slug: DocSlug) => {
@@ -220,6 +224,13 @@ export default function Navbar({ page, setPage }: NavbarProps) {
     : [];
 
   useEffect(() => {
+    // Ensure the global class is removed if the navbar ever unmounts while search is open.
+    return () => {
+      document.documentElement.classList.remove("docs-search-open");
+    };
+  }, []);
+
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const isK = e.key.toLowerCase() === "k";
       const ctrlOrMeta = e.ctrlKey || e.metaKey;
@@ -237,10 +248,11 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   }, [docsSearchOpen]);
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/15 bg-white/5 backdrop-blur">
-      <div className="w-full px-6 h-16 flex items-center gap-6">
-        {/* Left: logo / brand */}
-        <div className="flex-1 flex items-center">
+    <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/15 bg-black/40 backdrop-blur">
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-3 pb-3">
+        <div className="w-full flex items-center gap-4 rounded-full border border-white/15 bg-white/5 backdrop-blur shadow-glass px-4 lg:px-6 py-2">
+          {/* Left: logo / brand */}
+          <div className="flex-1 flex items-center min-w-0">
           <button
             onClick={() => {
               if (page !== "home") {
@@ -258,8 +270,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
           </button>
         </div>
 
-        {/* Center: primary navigation (desktop) / search (mobile) */}
-        <div className="flex items-center justify-center flex-none lg:flex-1">
+          {/* Center: primary navigation (desktop) / search (mobile) */}
+          <div className="flex items-center justify-center flex-none lg:flex-1 min-w-0">
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
             <button
@@ -300,37 +312,26 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             </button>
             <button
               onClick={() => {
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => scrollToSection("how"), 0);
-                } else {
+                if (page === "home") {
+                  // On the marketing home, Docs scrolls to the How It Works section.
                   scrollToSection("how");
+                } else if (page !== "docs") {
+                  // From any other top-level page, go to the dedicated Docs view.
+                  setPage("docs");
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }, 0);
+                } else {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }
               }}
               className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "how"
+                (page === "home" && activeSection === "how") || page === "docs"
                   ? "text-white bg-white/20"
                   : "text-slate-200/80 hover:text-white hover:bg-white/10"
               }`}
 >
               Docs
-            </button>
-            <button
-              onClick={() => {
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => scrollToSection("team"), 0);
-                } else {
-                  scrollToSection("team");
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "team"
-                  ? "text-white bg-white/20"
-                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              Team
             </button>
             <button
               onClick={() => setPage("contact")}
@@ -357,8 +358,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
           </button>
         </div>
 
-        {/* Right: docs search (desktop) + GitHub + mobile toggle */}
-        <div className="flex-1 flex items-center justify-end gap-3">
+          {/* Right: docs search (desktop) + GitHub + mobile toggle */}
+          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={openDocsSearch}
@@ -392,17 +393,18 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               <Bars3Icon className="h-6 w-6" />
             )}
           </button>
+          </div>
         </div>
       </div>
       {/* Mobile / desktop docs search dialog */}
       {docsSearchOpen && (
         <div className="fixed inset-0 z-40 flex items-start justify-center pt-24 px-4">
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-transparent"
             onClick={closeDocsSearch}
           />
-          <div className="relative z-10 w-full max-w-md rounded-2xl bg-slate-900/95 border border-white/25 shadow-glass overflow-hidden text-sm text-slate-100">
-            <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-slate-900">
+          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white/5 border border-white/15 shadow-glass backdrop-blur overflow-hidden text-sm text-slate-100 flex flex-col max-h-[calc(100vh-6rem)]">
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-transparent flex-none">
               <MagnifyingGlassIcon className="h-4 w-4 text-slate-300" />
               <input
                 id="docs-search-input"
@@ -420,7 +422,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               </button>
             </div>
 
-            <div className="max-h-[24rem] overflow-y-auto">
+            <div className="flex-1 min-h-[3.5rem] overflow-y-auto">
               {docsSearchQuery === "" ? (
                 <>
                   {recentDocs.length > 0 && (

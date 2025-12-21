@@ -40,3 +40,52 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
 }
+
+/* When the docs search dialog is open, overlay the docs content so it visually
+   connects to the command palette at the top. We use different rules for
+   desktop (three-column docs layout) and mobile (stacked layout). */
+
+/* Desktop / large screens: overlay only the center docs column between
+   sidebar and "On this page" panel. */
+@media (min-width: 1024px) {
+  .docs-search-open #docs-scroll {
+    position: relative;
+  }
+
+  .docs-search-open #docs-scroll::before {
+    content: "";
+    /* Fixed so it always covers the full viewport height, regardless of the
+       scroll container height or devtools resizing. */
+    position: fixed;
+    /* Start just below the navbar (h-16 => 4rem) so the nav stays clear. */
+    top: 4rem;
+    bottom: 0;
+    /* Leave space for the left docs sidebar + right "On this page" column. */
+    left: clamp(11rem, 16vw, 18rem);
+    right: clamp(11rem, 16vw, 18rem);
+    /* Match navbar-style glass: subtle light tint + strong blur over the
+       gradient. */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(18px);
+    pointer-events: none;
+    /* Below the navbar (z-50) but above docs content. */
+    z-index: 40;
+  }
+}
+
+/* Mobile / small screens: overlay the full content area below the navbar,
+   since there is no sidebar layout. Uses the same glassy treatment. */
+@media (max-width: 1023.98px) {
+  .docs-search-open::before {
+    content: "";
+    position: fixed;
+    top: 4rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(18px);
+    pointer-events: none;
+    z-index: 40;
+  }
+}
