@@ -25,8 +25,4 @@ dist-ssr
 
 # Env File
 .env
-WARP.md
-FRONTEND_COLORS.md
-FRONTEND_FLOWS.md
-PR_DESCRIPTION.md
-BACKEND_FLOWS.md
+readme/

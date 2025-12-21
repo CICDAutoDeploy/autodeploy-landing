@@ -249,8 +249,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/15 bg-black/40 backdrop-blur">
-      <div className="w-full px-4 sm:px-6 lg:px-8 pt-3 pb-3">
-        <div className="w-full flex items-center gap-4 rounded-full border border-white/15 bg-white/5 backdrop-blur shadow-glass px-4 lg:px-6 py-2">
+      <div className="w-full px-3 sm:px-4 lg:px-8 py-1 md:py-2">
+        <div className="w-full flex items-center gap-3 md:gap-4 rounded-full border border-white/15 bg-white/5 backdrop-blur shadow-glass px-3 lg:px-6 py-1 md:py-1.5">
           {/* Left: logo / brand */}
           <div className="flex-1 flex items-center min-w-0">
           <button
@@ -272,91 +272,108 @@ export default function Navbar({ page, setPage }: NavbarProps) {
 
           {/* Center: primary navigation (desktop) / search (mobile) */}
           <div className="flex items-center justify-center flex-none lg:flex-1 min-w-0">
-          {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
-            <button
-              onClick={() => {
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => {
+            {/* Desktop nav */}
+            <div className="hidden lg:flex items-center gap-4 text-sm font-medium rounded-full border border-white/15 bg-white/5 px-3 py-1.5 shadow-glass">
+              <button
+                onClick={() => {
+                  if (page !== "home") {
+                    setPage("home");
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }, 0);
+                  } else {
                     window.scrollTo({ top: 0, behavior: "smooth" });
-                  }, 0);
-                } else {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                page === "home" && activeSection === "home"
-                  ? "text-white bg-white/20"
-                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => {
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => scrollToSection("features"), 0);
-                } else {
-                  scrollToSection("features");
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "features"
-                  ? "text-white bg-white/20"
-                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              Features
-            </button>
-            <button
-              onClick={() => {
-                if (page === "home") {
-                  // On the marketing home, Docs scrolls to the How It Works section.
-                  scrollToSection("how");
-                } else if (page !== "docs") {
-                  // From any other top-level page, go to the dedicated Docs view.
-                  setPage("docs");
-                  setTimeout(() => {
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-md transition-colors ${
+                  page === "home" && activeSection === "home"
+                    ? "text-white bg-white/20"
+                    : "text-slate-200/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => {
+                  if (page !== "home") {
+                    setPage("home");
+                    setTimeout(() => scrollToSection("features"), 0);
+                  } else {
+                    scrollToSection("features");
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-md transition-colors ${
+                  activeSection === "features"
+                    ? "text-white bg-white/20"
+                    : "text-slate-200/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                Features
+              </button>
+              <button
+                onClick={() => {
+                  if (page === "home") {
+                    // On the marketing home, Docs scrolls to the How It Works section.
+                    scrollToSection("how");
+                  } else if (page !== "docs") {
+                    // From any other top-level page, go to the dedicated Docs view.
+                    setPage("docs");
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }, 0);
+                  } else {
                     window.scrollTo({ top: 0, behavior: "smooth" });
-                  }, 0);
-                } else {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                (page === "home" && activeSection === "how") || page === "docs"
-                  ? "text-white bg-white/20"
-                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
-              }`}
->
-              Docs
-            </button>
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-md transition-colors ${
+                  (page === "home" && activeSection === "how") || page === "docs"
+                    ? "text-white bg-white/20"
+                    : "text-slate-200/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                Docs
+              </button>
+              <button
+                onClick={() => {
+                  if (page !== "home") {
+                    setPage("home");
+                    setTimeout(() => scrollToSection("team"), 0);
+                  } else {
+                    scrollToSection("team");
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-md transition-colors ${
+                  activeSection === "team" && page === "home"
+                    ? "text-white bg-white/20"
+                    : "text-slate-200/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                Team
+              </button>
+              <button
+                onClick={() => setPage("contact")}
+                className={`px-3 py-1.5 rounded-md transition-colors ${
+                  page === "contact"
+                    ? "text-white bg-white/20"
+                    : "text-slate-200/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                Contact
+              </button>
+            </div>
+
+            {/* Mobile search pill */}
             <button
-              onClick={() => setPage("contact")}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                page === "contact"
-                  ? "text-white bg-white/20"
-                  : "text-slate-200/80 hover:text-white hover:bg-white/10"
-              }`}
+              type="button"
+              onClick={openDocsSearch}
+              className="lg:hidden inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm"
             >
-              Contact
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
+                <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+              </span>
+              <span className="whitespace-nowrap">Search docs...</span>
             </button>
           </div>
-
-          {/* Mobile search pill */}
-          <button
-            type="button"
-            onClick={openDocsSearch}
-            className="lg:hidden inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm"
-          >
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
-              <MagnifyingGlassIcon className="h-3.5 w-3.5" />
-            </span>
-            <span className="whitespace-nowrap">Search docs...</span>
-          </button>
-        </div>
 
           {/* Right: docs search (desktop) + GitHub + mobile toggle */}
           <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3">
@@ -403,7 +420,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             className="absolute inset-0 bg-transparent"
             onClick={closeDocsSearch}
           />
-          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white/5 border border-white/15 shadow-glass backdrop-blur overflow-hidden text-sm text-slate-100 flex flex-col max-h-[calc(100vh-6rem)]">
+          {/* Docs search dialog - match navbar island darkness */}
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/15 bg-black/60 shadow-glass backdrop-blur overflow-hidden text-sm text-slate-100 flex flex-col max-h-[calc(100vh-6rem)]">
             <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-transparent flex-none">
               <MagnifyingGlassIcon className="h-4 w-4 text-slate-300" />
               <input

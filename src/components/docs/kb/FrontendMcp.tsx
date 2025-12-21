@@ -1,5 +1,3 @@
-import React from "react";
-
 export const mcpToc = [
   { id: "mcp-overview", label: "What is MCP?" },
   { id: "mcp-how-it-helps", label: "How MCP helps you" },

@@ -10,6 +10,7 @@ export default function BackToTop({
   threshold = 400,
 }: BackToTopProps) {
   const [visible, setVisible] = useState(false);
+  const [bottomOffset, setBottomOffset] = useState(24); // px, matches bottom-6
 
   useEffect(() => {
     if (!enabled) {
@@ -18,6 +19,23 @@ export default function BackToTop({
 
     const onScroll = () => {
       setVisible(window.scrollY > threshold);
+
+      // Nudge the button up when the footer comes into view so it doesn't overlap.
+      const footer = document.querySelector("footer");
+      if (!footer) return;
+
+      const rect = footer.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const overlap = viewportHeight - rect.top; // > 0 when footer top is inside viewport
+
+      const baseBottom = 24; // 6 * 4px
+      const gapAboveFooter = 16; // keep a small gap above the footer bubble
+
+      if (overlap > 0) {
+        setBottomOffset(baseBottom + overlap + gapAboveFooter);
+      } else {
+        setBottomOffset(baseBottom);
+      }
     };
 
     window.addEventListener("scroll", onScroll);
@@ -30,7 +48,8 @@ export default function BackToTop({
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
-      className={`fixed bottom-6 right-6 z-50 rounded-full border border-white/30 bg-white/10 text-slate-100 p-3 shadow-glass backdrop-blur-md transition-all duration-300 ease-out hover:bg-white/20
+      style={{ bottom: `${bottomOffset}px` }}
+      className={`fixed right-6 z-50 rounded-full border border-white/30 bg-white/10 text-slate-100 p-3 shadow-glass backdrop-blur-md transition-all duration-300 ease-out hover:bg-white/20
         ${visible ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0 translate-y-3"}`}
     >
       <svg
