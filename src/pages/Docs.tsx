@@ -5,6 +5,7 @@ import DocsContentIntro from "../components/docs/DocsContentIntro";
 import FrontendQuickstart from "../components/docs/kb/FrontendQuickstart";
 import FrontendConfigurePipeline from "../components/docs/kb/FrontendConfigurePipeline";
 import FrontendPipelines from "../components/docs/kb/FrontendPipelines";
+import FrontendMcp from "../components/docs/kb/FrontendMcp";
 import FrontendEnvironments from "../components/docs/kb/FrontendEnvironments";
 import FrontendSecrets from "../components/docs/kb/FrontendSecrets";
 import FrontendGithubActions from "../components/docs/kb/FrontendGithubActions";
@@ -36,6 +37,7 @@ const DOC_COMPONENTS: Record<DocSlug, React.FC> = {
 
   // Conceptual pipelines & environments now use dedicated frontend KB components
   pipelines: FrontendPipelines,
+  mcp: FrontendMcp,
   environments: FrontendEnvironments,
 
   // Variables & secrets step

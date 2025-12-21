@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import type { DocSlug } from "./docs/types";
+
 const docsSections: { title: string; items: { slug: DocSlug; label: string }[] }[] = [
   {
     title: "Getting Started",
     items: [
       { slug: "intro", label: "Introduction" },
       { slug: "installation", label: "Installation" },
-      { slug: "configuration", label: "Configuration" },
+      { slug: "configuration", label: "Pipeline configuration" },
       { slug: "quickstart", label: "Quickstart Guide" },
     ],
   },
@@ -15,18 +16,19 @@ const docsSections: { title: string; items: { slug: DocSlug; label: string }[] }
     title: "Core Concepts",
     items: [
       { slug: "pipelines", label: "Pipelines" },
+      { slug: "mcp", label: "MCP" },
       { slug: "environments", label: "Environments" },
-      { slug: "secrets", label: "Variables & Secrets" },
+      { slug: "secrets", label: "Environment variables" },
       { slug: "webhooks", label: "Webhooks" },
     ],
   },
   {
     title: "Integrations",
     items: [
-      { slug: "github-actions", label: "GitHub Actions" },
+      { slug: "github-actions", label: "GitHub Actions Integration" },
       { slug: "gitlab-ci", label: "GitLab CI" },
       { slug: "slack", label: "Slack Notifications" },
-      { slug: "clouds", label: "AWS & Azure" },
+      { slug: "clouds", label: "Deploying to AWS & GCP" },
     ],
   },
   {
@@ -38,6 +40,20 @@ const docsSections: { title: string; items: { slug: DocSlug; label: string }[] }
     ],
   },
 ];
+
+type DocsIndexItem = { slug: DocSlug; label: string };
+
+const FLAT_DOCS_INDEX: DocsIndexItem[] = docsSections.flatMap((section) =>
+  section.items
+);
+
+const POPULAR_DOCS: DocsIndexItem[] = [
+  { slug: "configuration", label: "Pipeline configuration" },
+  { slug: "clouds", label: "Deploying to AWS & GCP" },
+  { slug: "secrets", label: "Handling secrets" },
+];
+
+const RECENT_STORAGE_KEY = "autodeploy-docs-recent";
 
 function GitHubMarkIcon({ className }: { className?: string }) {
   return (
@@ -74,6 +90,10 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   >("home");
 
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const [docsSearchOpen, setDocsSearchOpen] = useState(false);
+  const [docsSearchQuery, setDocsSearchQuery] = useState("");
+  const [recentDocs, setRecentDocs] = useState<DocsIndexItem[]>([]);
 
   useEffect(() => {
     if (page !== "home") {
@@ -133,6 +153,88 @@ export default function Navbar({ page, setPage }: NavbarProps) {
     const t = setTimeout(() => setMobileOpen(false), 0);
     return () => clearTimeout(t);
   }, [page]);
+
+  // Hydrate recent docs search entries from localStorage
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(RECENT_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as DocsIndexItem[];
+        const valid = parsed.filter((item) =>
+          FLAT_DOCS_INDEX.some((d) => d.slug === item.slug)
+        );
+        setRecentDocs(valid.slice(0, 5));
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }, []);
+
+  const recordRecentDoc = (item: DocsIndexItem) => {
+    setRecentDocs((prev) => {
+      const deduped = [item, ...prev.filter((p) => p.slug !== item.slug)].slice(0, 5);
+      try {
+        window.localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(deduped));
+      } catch {
+        // ignore write errors
+      }
+      return deduped;
+    });
+  };
+
+  const openDocsSearch = () => {
+    setDocsSearchOpen(true);
+    setTimeout(() => {
+      const input = document.getElementById("docs-search-input") as
+        | HTMLInputElement
+        | null;
+      input?.focus();
+    }, 0);
+  };
+
+  const closeDocsSearch = () => {
+    setDocsSearchOpen(false);
+    setDocsSearchQuery("");
+  };
+
+  const navigateToDoc = (slug: DocSlug) => {
+    const match = FLAT_DOCS_INDEX.find((d) => d.slug === slug);
+    if (match) {
+      recordRecentDoc(match);
+    }
+    if (page !== "docs") {
+      setPage("docs");
+      setTimeout(() => {
+        window.setDocSlug?.(slug);
+      }, 0);
+    } else {
+      window.setDocSlug?.(slug);
+    }
+    closeDocsSearch();
+  };
+
+  const filteredDocs = docsSearchQuery
+    ? FLAT_DOCS_INDEX.filter((item) =>
+        item.label.toLowerCase().includes(docsSearchQuery.toLowerCase())
+      )
+    : [];
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const isK = e.key.toLowerCase() === "k";
+      const ctrlOrMeta = e.ctrlKey || e.metaKey;
+      if (ctrlOrMeta && isK) {
+        e.preventDefault();
+        openDocsSearch();
+      } else if (e.key === "Escape" && docsSearchOpen) {
+        e.preventDefault();
+        closeDocsSearch();
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [docsSearchOpen]);
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/15 bg-white/5 backdrop-blur">
@@ -245,6 +347,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
           {/* Mobile search pill */}
           <button
             type="button"
+            onClick={openDocsSearch}
             className="lg:hidden inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm"
           >
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
@@ -258,6 +361,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
         <div className="flex-1 flex items-center justify-end gap-3">
           <button
             type="button"
+            onClick={openDocsSearch}
             className="hidden lg:inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm hover:bg-white/10"
           >
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
@@ -290,6 +394,119 @@ export default function Navbar({ page, setPage }: NavbarProps) {
           </button>
         </div>
       </div>
+      {/* Mobile / desktop docs search dialog */}
+      {docsSearchOpen && (
+        <div className="fixed inset-0 z-40 flex items-start justify-center pt-24 px-4">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={closeDocsSearch}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-2xl bg-slate-900/95 border border-white/25 shadow-glass overflow-hidden text-sm text-slate-100">
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-slate-900">
+              <MagnifyingGlassIcon className="h-4 w-4 text-slate-300" />
+              <input
+                id="docs-search-input"
+                className="flex-1 bg-transparent outline-none text-sm text-slate-50 placeholder:text-slate-400"
+                placeholder="Search docs..."
+                value={docsSearchQuery}
+                onChange={(e) => setDocsSearchQuery(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={closeDocsSearch}
+                className="text-slate-400 hover:text-slate-100 text-xs"
+              >
+                Esc
+              </button>
+            </div>
+
+            <div className="max-h-[24rem] overflow-y-auto">
+              {docsSearchQuery === "" ? (
+                <>
+                  {recentDocs.length > 0 && (
+                    <div className="px-4 pt-3 pb-2">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 mb-1">
+                        Recent
+                      </div>
+                      <ul className="space-y-1">
+                        {recentDocs.map((item) => (
+                          <li key={item.slug}>
+                            <button
+                              type="button"
+                              onClick={() => navigateToDoc(item.slug)}
+                              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-white/5"
+                            >
+                              <span className="material-symbols-outlined text-xs text-slate-400">
+                                history
+                              </span>
+                              <span className="text-sm text-slate-100">{item.label}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="px-4 pt-3 pb-4 border-t border-white/10">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 mb-1">
+                      Popular
+                    </div>
+                    <ul className="space-y-1">
+                      {POPULAR_DOCS.map((item) => (
+                        <li key={item.slug}>
+                          <button
+                            type="button"
+                            onClick={() => navigateToDoc(item.slug)}
+                            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-white/5"
+                          >
+                            <span className="material-symbols-outlined text-xs text-slate-400">
+                              description
+                            </span>
+                            <span className="text-sm text-slate-100">{item.label}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500">
+                      <span>
+                        Press <span className="font-semibold text-slate-300">Enter</span> to
+                        select
+                      </span>
+                      <span>
+                        Press <span className="font-semibold text-slate-300">Esc</span> to close
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="px-4 pt-3 pb-4">
+                  {filteredDocs.length === 0 ? (
+                    <p className="text-xs text-slate-400">No docs match your search.</p>
+                  ) : (
+                    <ul className="space-y-1">
+                      {filteredDocs.map((item) => (
+                        <li key={item.slug}>
+                          <button
+                            type="button"
+                            onClick={() => navigateToDoc(item.slug)}
+                            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-white/5"
+                          >
+                            <span className="material-symbols-outlined text-xs text-slate-400">
+                              description
+                            </span>
+                            <span className="text-sm text-slate-100">{item.label}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {(
         <div
           className={`lg:hidden fixed top-16 right-4 z-40 bg-gradient-to-b from-slate-900/80 via-slate-800/75 to-slate-900/85 border border-white/25 rounded-2xl w-fit min-w-[1rem] overflow-hidden transform transition-all duration-300 ease-out shadow-glass backdrop-blur-xl ${

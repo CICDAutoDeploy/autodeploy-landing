@@ -3,6 +3,7 @@ import { introToc } from "./DocsContentIntro";
 import { configureToc } from "./kb/FrontendConfigurePipeline";
 import { quickstartToc } from "./kb/FrontendQuickstart";
 import { pipelinesToc } from "./kb/FrontendPipelines";
+import { mcpToc } from "./kb/FrontendMcp";
 import { environmentsToc } from "./kb/FrontendEnvironments";
 import { secretsToc } from "./kb/FrontendSecrets";
 import { githubActionsToc } from "./kb/FrontendGithubActions";
@@ -20,6 +21,7 @@ export const docsToc: Record<DocSlug, TocItem[]> = {
   configuration: configureToc,
   quickstart: quickstartToc,
   pipelines: pipelinesToc,
+  mcp: mcpToc,
   environments: environmentsToc,
   secrets: secretsToc,
   webhooks: [],

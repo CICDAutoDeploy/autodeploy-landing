@@ -14,6 +14,7 @@ const sections: { title: string; items: { slug: DocSlug; label: string }[] }[] =
     title: "Core Concepts",
     items: [
       { slug: "pipelines", label: "Pipelines" },
+      { slug: "mcp", label: "MCP" },
       { slug: "environments", label: "Environments" },
       { slug: "secrets", label: "Variables & Secrets" },
       { slug: "webhooks", label: "Webhooks" },

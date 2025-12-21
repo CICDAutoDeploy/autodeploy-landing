@@ -4,6 +4,7 @@ export type DocSlug =
   | "configuration"
   | "quickstart"
   | "pipelines"
+  | "mcp"
   | "environments"
   | "secrets"
   | "webhooks"
