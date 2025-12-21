@@ -61,16 +61,18 @@ export default function DocsPage() {
   return (
     <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-24">
       {/* Desktop layout: sidebars + scrollable center */}
-      <div className="hidden lg:grid grid-cols-[16rem,minmax(0,1fr),16rem] gap-10 h-[calc(100vh-8rem)]">
+      <div className="hidden lg:grid grid-cols-[14rem,minmax(0,1fr),16rem] gap-10 h-[calc(100vh-8rem)]">
         <div className="h-full">
           <DocsSidebar active={doc} onSelect={setDoc} />
         </div>
 
         <main
           id="docs-scroll"
-          className="h-full overflow-y-auto pl-4 pr-6 lg:pl-6 lg:pr-8 scroll-smooth"
+          className="h-full overflow-y-auto px-4 lg:px-6 scroll-smooth flex justify-center"
         >
-          <Content />
+          <div className="w-full max-w-3xl">
+            <Content />
+          </div>
         </main>
 
         <div className="h-full">
