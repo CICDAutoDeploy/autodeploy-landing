@@ -7,7 +7,7 @@ type FooterProps = {
 export default function Footer({ setPage }: FooterProps) {
   return (
     <footer className="border-t border-white/15 bg-black/40 backdrop-blur">
-      <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-slate-200/80">
+      <div className="max-w-7xl mx-auto px-6 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-200/80">
         {/* Brand */}
         <button
           onClick={() => setPage("home")}

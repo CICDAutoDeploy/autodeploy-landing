@@ -23,21 +23,21 @@
     color: inherit;
   }
 
-  /* Sleek scrollbars for docs center column */
-  #docs-scroll {
+  /* Sleek scrollbars for docs scrollable areas */
+  .docs-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
   }
 
-  #docs-scroll::-webkit-scrollbar {
+  .docs-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
 
-  #docs-scroll::-webkit-scrollbar-track {
+  .docs-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  #docs-scroll::-webkit-scrollbar-thumb {
+  .docs-scrollbar::-webkit-scrollbar-thumb {
     background-color: rgba(148, 163, 184, 0.6);
     border-radius: 9999px;
   }

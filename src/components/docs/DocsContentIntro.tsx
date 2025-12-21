@@ -1,3 +1,9 @@
+export const introToc = [
+  { id: "what-is-autodeploy", label: "What is AutoDeploy?" },
+  { id: "getting-started", label: "Getting Started Workflow" },
+  { id: "example-config", label: "Example Configuration" },
+];
+
 export default function DocsContentIntro() {
   return (
     <div className="prose prose-invert max-w-none">

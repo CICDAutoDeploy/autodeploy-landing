@@ -13,11 +13,13 @@ import HowItWorks from "./components/HowItWorks";
 import CTA from "./components/CTA";
 import ProblemSolution from "./components/ProblemSolution";
 import BackToTop from "./components/BackToTop";
+import type { DocSlug } from "./components/docs/types";
 
 declare global {
   interface Window {
     showToast?: (message: string, type?: "success" | "error") => void;
     setPage?: (page: "home" | "privacy" | "terms" | "contact" | "docs") => void;
+    setDocSlug?: (slug: DocSlug) => void;
   }
 }
 

@@ -46,8 +46,8 @@ export default function DocsSidebar({
   onSelect: (slug: DocSlug) => void;
 }) {
   return (
-    <aside className="hidden lg:block w-64 flex-shrink-0 border-r border-white/10 py-2 pr-6">
-      <nav className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 space-y-8 text-sm">
+    <aside className="hidden lg:block flex-shrink-0 border-r border-white/10 py-2 pr-6 min-w-[11rem]">
+      <nav className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 space-y-8 text-sm docs-scrollbar">
         {sections.map((section) => (
           <div key={section.title}>
             <h3 className="font-semibold uppercase tracking-wider text-slate-100 mb-3 text-xs">

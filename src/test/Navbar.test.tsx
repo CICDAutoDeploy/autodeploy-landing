@@ -39,7 +39,7 @@ describe('Navbar', () => {
     expect(screen.getByText('AutoDeploy')).toBeInTheDocument();
     expect(screen.getAllByText('Home')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Features')[0]).toBeInTheDocument();
-    expect(screen.getAllByText('How it works')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Docs')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Team')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Contact')[0]).toBeInTheDocument();
   });

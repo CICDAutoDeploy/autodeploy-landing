@@ -1,30 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { DocSlug } from "./types";
-
-const tocByDoc: Record<DocSlug, { id: string; label: string }[]> = {
-  intro: [
-    { id: "what-is-autodeploy", label: "What is AutoDeploy?" },
-    { id: "getting-started", label: "Getting Started Workflow" },
-    { id: "example-config", label: "Example Configuration" },
-  ],
-  installation: [],
-  configuration: [],
-  quickstart: [],
-  pipelines: [],
-  environments: [],
-  secrets: [],
-  webhooks: [],
-  "github-actions": [],
-  "gitlab-ci": [],
-  slack: [],
-  clouds: [],
-  "auth-api": [],
-  "deployments-api": [],
-  "logs-api": [],
-};
+import { docsToc } from "./docsToc";
 
 export default function DocsOnThisPage({ doc }: { doc: DocSlug }) {
-  const items = tocByDoc[doc] ?? [];
+  const items = docsToc[doc] ?? [];
   const [activeId, setActiveId] = useState<string | null>(
     items.length > 0 ? items[0].id : null
   );
@@ -65,7 +44,7 @@ export default function DocsOnThisPage({ doc }: { doc: DocSlug }) {
   }, [doc]);
 
   return (
-    <aside className="hidden xl:block w-64 flex-shrink-0 py-2 pl-6">
+    <aside className="hidden lg:block w-[11rem] flex-shrink-0 py-2 pl-6">
       <div className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2">
         <h4 className="text-sm font-semibold text-slate-100 mb-4 uppercase tracking-wider">
           On this page
