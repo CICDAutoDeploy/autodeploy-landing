@@ -42,6 +42,25 @@ export default function HowItWorks() {
           <p className="text-lg text-slate-200/80 max-w-2xl mx-auto">
             From repository to production-ready pipeline in a few simple steps.
           </p>
+
+          <div className="mt-6 flex justify-center gap-4 text-sm font-medium">
+            <a
+              href="/docs"
+              className="px-4 py-2 rounded-full border border-white/30 bg-white/10 text-slate-100 hover:bg-white/20 hover:text-white transition-colors backdrop-blur-md shadow-glass"
+              onClick={(event) => {
+                event.preventDefault();
+                (window as any).setPage?.("docs");
+              }}
+            >
+              Read the docs
+            </a>
+            <a
+              href="/demo"
+              className="px-4 py-2 rounded-full border border-white/20 text-slate-200/80 hover:text-white hover:bg-white/10 transition-colors backdrop-blur-md"
+            >
+              Demo
+            </a>
+          </div>
         </div>
 
         <div className="max-w-3xl mx-auto flex flex-col gap-10 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-md shadow-glass p-6 sm:p-8">
