@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Team from "./components/Team";
+import Team from "./components/sections/Team";
 import Footer from "./components/Footer";
 import { useWaitlist } from "./hooks/useWaitlist";
 import PrivacyPage from "./pages/Privacy";
@@ -7,12 +7,12 @@ import TermsPage from "./pages/Terms";
 import ContactPage from "./pages/Contact";
 import DocsPage from "./pages/Docs";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Features from "./components/Features";
-import HowItWorks from "./components/HowItWorks";
-import CTA from "./components/CTA";
-import ProblemSolution from "./components/ProblemSolution";
-import BackToTop from "./components/BackToTop";
+import Hero from "./components/sections/Hero";
+import Features from "./components/sections/Features";
+import HowItWorks from "./components/sections/HowItWorks";
+import CTA from "./components/sections/CTA";
+import ProblemSolution from "./components/sections/ProblemSolution";
+import BackToTop from "./components/sections/BackToTop";
 import type { DocSlug } from "./components/docs/types";
 
 declare global {

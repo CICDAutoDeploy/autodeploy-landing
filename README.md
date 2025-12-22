@@ -34,15 +34,10 @@ autodeploy-landing/
 │  └─ team/                 # Team headshots
 ├─ src/
 │  ├─ components/
-│  │  ├─ CTA.tsx
-│  │  ├─ Features.tsx
-│  │  ├─ Footer.tsx
-│  │  ├─ Hero.tsx
-│  │  ├─ HowItWorks.tsx
+│  │  ├─ Footer.tsx          # Global footer
 │  │  ├─ Navbar.tsx          # Top-level navbar that wires subcomponents/hooks
 │  │  ├─ navbar/             # Extracted navbar components & hooks (DocsSearchDialog, MobileMenu, etc.)
-│  │  ├─ ProblemSolution.tsx
-│  │  └─ Team.tsx
+│  │  └─ sections/           # Marketing sections (Hero, Features, ProblemSolution, HowItWorks, CTA, Team, BackToTop)
 │  ├─ hooks/
 │  │  └─ useWaitlist.ts      # Shared waitlist logic
 │  ├─ pages/
