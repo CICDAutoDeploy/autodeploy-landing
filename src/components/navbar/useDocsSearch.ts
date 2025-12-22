@@ -55,9 +55,8 @@ export function useDocsSearch({ page, setPage }: UseDocsSearchArgs) {
     document.documentElement.classList.add("docs-search-open");
 
     setTimeout(() => {
-      const input = document.getElementById("docs-search-input") as
-        | HTMLInputElement
-        | null;
+      const input = (document.getElementById("docs-search-inline-input") ||
+        document.getElementById("docs-search-input")) as HTMLInputElement | null;
       input?.focus();
     }, 0);
   };

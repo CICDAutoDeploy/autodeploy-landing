@@ -1,43 +1,6 @@
 import type { DocSlug } from "./types";
-
-const sections: { title: string; items: { slug: DocSlug; label: string }[] }[] = [
-  {
-    title: "Getting Started",
-    items: [
-      { slug: "intro", label: "Introduction" },
-      { slug: "installation", label: "Installation" },
-      { slug: "configuration", label: "Configuration" },
-      { slug: "quickstart", label: "Quickstart Guide" },
-    ],
-  },
-  {
-    title: "Core Concepts",
-    items: [
-      { slug: "pipelines", label: "Pipelines" },
-      { slug: "mcp", label: "MCP" },
-      { slug: "environments", label: "Environments" },
-      { slug: "secrets", label: "Variables & Secrets" },
-      { slug: "webhooks", label: "Webhooks" },
-    ],
-  },
-  {
-    title: "Integrations",
-    items: [
-      { slug: "github-actions", label: "GitHub Actions" },
-      { slug: "gitlab-ci", label: "GitLab CI" },
-      { slug: "slack", label: "Slack Notifications" },
-      { slug: "clouds", label: "AWS & Azure" },
-    ],
-  },
-  {
-    title: "API Reference",
-    items: [
-      { slug: "auth-api", label: "Authentication" },
-      { slug: "deployments-api", label: "Deployments" },
-      { slug: "logs-api", label: "Logs" },
-    ],
-  },
-];
+import { docsSections } from "../navbar/docsConfig";
+import { PUBLISHED_DOC_SLUGS } from "./docsRegistry";
 
 export default function DocsSidebar({
   active,
@@ -46,10 +9,16 @@ export default function DocsSidebar({
   active: DocSlug;
   onSelect: (slug: DocSlug) => void;
 }) {
+  const filteredSections = docsSections
+    .map((section) => ({
+      title: section.title,
+      items: section.items.filter((item) => PUBLISHED_DOC_SLUGS.has(item.slug)),
+    }))
+    .filter((section) => section.items.length > 0);
   return (
     <aside className="hidden lg:block flex-shrink-0 border-r border-white/10 py-2 pr-6 min-w-[11rem]">
       <nav className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 space-y-8 text-sm docs-scrollbar">
-        {sections.map((section) => (
+        {filteredSections.map((section) => (
           <div key={section.title}>
             <h3 className="font-semibold uppercase tracking-wider text-slate-100 mb-3 text-xs">
               {section.title}

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useCurrentUser } from "../lib/currentUser";
 import { openAgentApp } from "../lib/api";
 import { DocsSearchDialog } from "./navbar/DocsSearchDialog";
+import { DocsSearchMenu } from "./navbar/DocsSearchMenu";
 import { DesktopNavLinks } from "./navbar/DesktopNavLinks";
 import { MobileMenu } from "./navbar/MobileMenu";
 import { docsSections, POPULAR_DOCS } from "./navbar/docsConfig";
@@ -31,6 +32,12 @@ export default function Navbar({ page, setPage, hasBanner = false }: NavbarProps
   const { activeSection, scrollToSection } = useActiveSection({ page });
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : false,
+  );
+  const popoverRef = useRef<HTMLDivElement | null>(null);
 
   const {
     docsSearchOpen,
@@ -42,6 +49,24 @@ export default function Navbar({ page, setPage, hasBanner = false }: NavbarProps
     closeDocsSearch,
     navigateToDoc,
   } = useDocsSearch({ page, setPage });
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener("change", handler);
+    setIsDesktop(mql.matches);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    if (!docsSearchOpen || !isDesktop) return;
+    const handleClickAway = (e: MouseEvent) => {
+      if (!popoverRef.current) return;
+      if (popoverRef.current.contains(e.target as Node)) return;
+      closeDocsSearch();
+    };
+    document.addEventListener("mousedown", handleClickAway);
+    return () => document.removeEventListener("mousedown", handleClickAway);
+  }, [docsSearchOpen, isDesktop, closeDocsSearch]);
 
 
   useEffect(() => {
@@ -89,19 +114,43 @@ export default function Navbar({ page, setPage, hasBanner = false }: NavbarProps
 
           {/* Right: docs search (desktop) + account menu + mobile toggle */}
           <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3 relative">
-            <button
-              type="button"
-              onClick={openDocsSearch}
-              className="hidden lg:inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm hover:bg-white/10"
-            >
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
-                <MagnifyingGlassIcon className="h-3.5 w-3.5" />
-              </span>
-              <span className="whitespace-nowrap">Search docs...</span>
-              <span className="ml-1 rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-slate-300">
-                Ctrl K
-              </span>
-            </button>
+            <div className="hidden lg:block relative" ref={popoverRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (docsSearchOpen) {
+                    closeDocsSearch();
+                  } else {
+                    openDocsSearch();
+                  }
+                }}
+                aria-haspopup="dialog"
+                aria-expanded={docsSearchOpen}
+                className={`inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs shadow-sm hover:bg-white/10 ${
+                  docsSearchOpen ? "bg-white/10 text-slate-100" : "bg-white/5 text-slate-200/80"
+                }`}
+              >
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
+                  <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+                </span>
+                <span className="whitespace-nowrap">Search docs...</span>
+              </button>
+
+              {docsSearchOpen && isDesktop && (
+                <div className="absolute right-0 mt-2 w-[420px] z-50">
+                  <DocsSearchMenu
+                    query={docsSearchQuery}
+                    onQueryChange={setDocsSearchQuery}
+                    recentDocs={recentDocs}
+                    popularDocs={POPULAR_DOCS}
+                    filteredDocs={filteredDocs}
+                    onSelectDoc={navigateToDoc}
+                    onClose={closeDocsSearch}
+                    inputId="docs-search-inline-input"
+                  />
+                </div>
+              )}
+            </div>
 
             <AccountMenu
               displayName={displayName}
@@ -131,7 +180,7 @@ export default function Navbar({ page, setPage, hasBanner = false }: NavbarProps
       </div>
       {/* Mobile / desktop docs search dialog */}
       <DocsSearchDialog
-        open={docsSearchOpen}
+        open={docsSearchOpen && !isDesktop}
         query={docsSearchQuery}
         onQueryChange={setDocsSearchQuery}
         recentDocs={recentDocs}

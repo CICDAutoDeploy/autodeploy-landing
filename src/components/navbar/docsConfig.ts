@@ -1,8 +1,9 @@
 import type { DocSlug } from "../docs/types";
+import { PUBLISHED_DOC_SLUGS } from "../docs/docsRegistry";
 
 export type DocsIndexItem = { slug: DocSlug; label: string };
 
-export const docsSections: { title: string; items: DocsIndexItem[] }[] = [
+const RAW_SECTIONS: { title: string; items: DocsIndexItem[] }[] = [
   {
     title: "Getting Started",
     items: [
@@ -41,8 +42,15 @@ export const docsSections: { title: string; items: DocsIndexItem[] }[] = [
   },
 ];
 
-export const FLAT_DOCS_INDEX: DocsIndexItem[] = docsSections.flatMap((section) =>
-  section.items,
+export const docsSections: { title: string; items: DocsIndexItem[] }[] = RAW_SECTIONS.map(
+  (section) => ({
+    title: section.title,
+    items: section.items.filter((item) => PUBLISHED_DOC_SLUGS.has(item.slug)),
+  }),
+).filter((section) => section.items.length > 0);
+
+export const FLAT_DOCS_INDEX: DocsIndexItem[] = docsSections.flatMap(
+  (section) => section.items,
 );
 
 export const POPULAR_DOCS: DocsIndexItem[] = [

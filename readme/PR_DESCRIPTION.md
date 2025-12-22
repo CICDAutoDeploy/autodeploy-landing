@@ -272,3 +272,10 @@ This follow-up change builds on the existing navbar/docs work to wire the SPA to
   - `Launch AutoDeploy` behavior for Pro vs non-Pro users (including banner upsell).
   - System banner showing on page load when configured via the Admin Console.
   - Admin Console user list and promote/demote buttons updating roles correctly.
+
+### Navbar polish (follow-up)
+
+A small UX follow-up was made to polish the navbar overlays:
+
+- **Account menu**: the dropdown is now anchored to the avatar button (no hard-coded top offset), supports click-away + `Esc` to close, and focuses the first item when opened.
+- **Docs search (desktop)**: the `Search docs...` pill no longer disappears when the inline search menu opens; it stays visible and toggles open/close.

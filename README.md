@@ -25,6 +25,9 @@ Setting up CI/CD pipelines is often slow, error‑prone, and inconsistent across
 - Configurable branding for AutoDeploy
 - “Join the Waitlist” button routing to `/waitlist` (Supabase‑backed form coming next)
 - Auth-aware navbar showing account state, Pro/Admin badges, and a `Launch AutoDeploy` entry point
+- Navbar overlay polish:
+  - Account menu dropdown is anchored to the avatar, closes on click-away / `Esc`, and focuses the first item on open
+  - Desktop docs search pill stays visible while the inline search menu is open
 - Top-of-page banner system for Pro upsell and system-wide notices
 - Admin Console page for managing system banners and admin users
 

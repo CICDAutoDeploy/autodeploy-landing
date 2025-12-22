@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { startGithubLogin, logoutSession } from "../../lib/api";
 
@@ -26,9 +26,42 @@ export function AccountMenu({
   onOpenAdmin,
 }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const firstItemRef = useRef<HTMLButtonElement | null>(null);
+  const menuId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(e.target as Node)) return;
+      setOpen(false);
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    // Make keyboard navigation sane: put focus into the menu.
+    firstItemRef.current?.focus();
+  }, [open]);
+
+  const menuItemClass =
+    "w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left";
 
   return (
-    <>
+    <div className="relative" ref={rootRef}>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
@@ -36,6 +69,7 @@ export function AccountMenu({
         aria-label="Open account menu"
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-controls={open ? menuId : undefined}
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/80 text-slate-50">
           {initials ? (
@@ -47,7 +81,12 @@ export function AccountMenu({
       </button>
 
       {open && (
-        <div className="absolute right-3 top-[4.70rem] z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-white/15 bg-black/80 text-slate-100 shadow-glass backdrop-blur overflow-hidden">
+        <div
+          id={menuId}
+          role="menu"
+          aria-label="Account menu"
+          className="absolute right-0 top-full mt-2 z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-white/15 bg-black/80 text-slate-100 shadow-glass backdrop-blur overflow-hidden"
+        >
           <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-white/10">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-slate-50">
               {initials ? (
@@ -81,6 +120,8 @@ export function AccountMenu({
               </div>
               <div className="py-1">
                 <button
+                  ref={firstItemRef}
+                  role="menuitem"
                   type="button"
                   onClick={() => {
                     if (!isPro) {
@@ -88,12 +129,13 @@ export function AccountMenu({
                         "The deployment agent is a Pro feature. During beta you may be granted access; contact the AutoDeploy team or upgrade when available.",
                         "warning",
                       );
+                      setOpen(false);
                       return;
                     }
                     onOpenAgent();
                     setOpen(false);
                   }}
-                  className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+                  className={menuItemClass}
                 >
                   {isPro ? "Launch AutoDeploy" : "Launch AutoDeploy (Pro)"}
                 </button>
@@ -103,7 +145,10 @@ export function AccountMenu({
 
           <button
             type="button"
+            role="menuitem"
             className="w-full px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-white/5 text-left border-b border-white/10"
+            onClick={() => setOpen(false)}
+            ref={!isAuthenticated ? firstItemRef : undefined}
           >
             View Profile
           </button>
@@ -114,7 +159,9 @@ export function AccountMenu({
           <div className="py-1">
             <button
               type="button"
-              className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+              role="menuitem"
+              className={menuItemClass}
+              onClick={() => setOpen(false)}
             >
               Settings
             </button>
@@ -127,6 +174,7 @@ export function AccountMenu({
             {isAdmin && onOpenAdmin && (
               <button
                 type="button"
+                role="menuitem"
                 className="w-full px-4 py-2 text-sm text-amber-200 hover:bg-amber-500/10 text-left flex items-center justify-between"
                 onClick={() => {
                   onOpenAdmin();
@@ -141,13 +189,16 @@ export function AccountMenu({
             )}
             <button
               type="button"
-              className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+              role="menuitem"
+              className={menuItemClass}
+              onClick={() => setOpen(false)}
             >
               What's New
             </button>
             <button
               type="button"
-              className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+              role="menuitem"
+              className={menuItemClass}
               onClick={() => {
                 onOpenDocs();
                 setOpen(false);
@@ -157,7 +208,9 @@ export function AccountMenu({
             </button>
             <button
               type="button"
-              className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+              role="menuitem"
+              className={menuItemClass}
+              onClick={() => setOpen(false)}
             >
               Help &amp; Support
             </button>
@@ -165,8 +218,10 @@ export function AccountMenu({
 
           <button
             type="button"
+            role="menuitem"
             className="w-full px-4 py-2.5 text-sm font-medium text-left text-red-400 hover:bg-red-500/10 border-t border-white/10"
             onClick={() => {
+              setOpen(false);
               if (isAuthenticated) {
                 void logoutSession();
               } else {
@@ -187,6 +242,6 @@ export function AccountMenu({
           aria-hidden="true"
         />
       )}
-    </>
+    </div>
   );
 }
