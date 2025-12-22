@@ -24,6 +24,9 @@ Setting up CI/CD pipelines is often slow, error‑prone, and inconsistent across
 - Hero section, feature breakdown, team section, and CTA
 - Configurable branding for AutoDeploy
 - “Join the Waitlist” button routing to `/waitlist` (Supabase‑backed form coming next)
+- Auth-aware navbar showing account state, Pro/Admin badges, and a `Launch AutoDeploy` entry point
+- Top-of-page banner system for Pro upsell and system-wide notices
+- Admin Console page for managing system banners and admin users
 
 ---
 
@@ -43,10 +46,11 @@ autodeploy-landing/
 │  ├─ pages/
 │  │  ├─ Contact.tsx
 │  │  ├─ Privacy.tsx
-│  │  └─ Terms.tsx
+│  │  ├─ Terms.tsx
+│  │  └─ Admin.tsx           # Admin console for system banners and user management
 │  ├─ lib/
 │  │  ├─ supabase.ts         # Supabase client for waitlist
-│  │  ├─ api.ts              # Lightweight REST + auth helpers (health, OAuth, current user)
+│  │  ├─ api.ts              # Lightweight REST + auth/admin helpers (health, OAuth, current user, banners, users)
 │  │  └─ currentUser.ts      # useCurrentUser() hook hydrated from backend /api/me
 │  ├─ App.tsx                # App orchestration / routing
 │  ├─ main.tsx              # Entry point
@@ -146,9 +150,9 @@ Hosting on:
 - 📄 **Repository:** https://github.com/CICDAutoDeploy/autodeploy-landing
 
 
-## 🔐 Auth & User Model Overview
+## 🔐 Auth, Roles, and Admin Surface
 
-The landing SPA integrates with the AutoDeploy backend's authentication system to show account state and pro/admin status in the navbar.
+The landing SPA integrates with the AutoDeploy backend's authentication system to show account state and pro/admin status in the navbar and expose a minimal admin surface.
 
 - Backend sets an HTTP-only `mcp_session` cookie after local or GitHub OAuth login.
 - Frontend calls `GET ${VITE_API_BASE_URL}/api/me` (via `fetchCurrentUser()`) to hydrate:
@@ -160,8 +164,12 @@ The landing SPA integrates with the AutoDeploy backend's authentication system t
   - Swap between "Log in" and "Log out" actions.
   - Show initials/email for authenticated users.
   - Render "Pro" / "Admin" badges when applicable.
+  - Provide a `Launch AutoDeploy` entry point (Pro-only) and an **Admin Console** link for admins.
+- The Admin Console page exposes:
+  - A **Users & roles** table powered by `GET /users` and `POST /users/promote`.
+  - A **System banner** editor powered by `GET/POST/DELETE /api/system-banner`.
 
-For more detail, see `readme/auth.md` in this repo and `AUTH.md` in the backend repo.
+For more detail, see the docs under `readme/` in this repo and `AUTH.md` / `BACKEND_FLOWS.md` in the backend repo.
 
 ## 🔐 Environment Variables
 

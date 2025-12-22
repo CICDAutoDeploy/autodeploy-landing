@@ -234,3 +234,41 @@ Global env flags:
 - Pro/beta users see a "Pro" pill in the account menu and have access to agent-related features (gated server-side by `USE_AGENT`).
 - System admins see an "Admin" pill and can hit admin-only backend routes (e.g., `/users`, `/users/promote`, gated by `MANAGE_USERS`).
 - Free users with no beta flags see no badge and are rejected by pro-only backend endpoints once global beta is turned off.
+
+---
+
+## Update: Auth-Aware Navbar, System Banners, and Admin Console (Follow-up)
+
+This follow-up change builds on the existing navbar/docs work to wire the SPA to the real backend auth model and expose a minimal admin surface.
+
+### What’s new in this update
+
+- **Auth-aware navbar & account menu**
+  - `fetchCurrentUser()` now derives `isPro` and `isAdmin` from backend `plan`, `beta_pro_granted`, and `role`.
+  - `useCurrentUser()` hydrates the navbar and account menu from `/api/me`.
+  - `AccountMenu` shows initials/email plus "Pro" and "Admin" badges when applicable.
+
+- **Agent entry point + Pro gating**
+  - Adds a `Launch AutoDeploy` button under the account menu **Product** section.
+  - Only Pro users can actually open the agent; non-Pro users see `Launch AutoDeploy (Pro)`.
+  - Non-Pro clicks trigger a short-lived top-of-page banner explaining that the deployment agent is a Pro feature and how to request access.
+
+- **Top-of-page banner system**
+  - Global `window.showBanner(message, tone, options)` helper for client-side UX banners.
+  - System banners hydrated from `GET /api/system-banner` and rendered above the navbar; navbar is offset when a banner is present.
+  - Backend exposes `GET/POST/DELETE /api/system-banner` and a `system_banners` table, documented in `server/src/BACKEND_FLOWS.md`.
+
+- **Admin Console**
+  - New `AdminPage` reachable via an **Admin Console** item in the account menu for `SYSTEM_ADMIN` users.
+  - Section 1: **Users & roles** – lists recent users via `GET /users` and allows promoting/demoting `SYSTEM_ADMIN` via `POST /users/promote`.
+  - Section 2: **System banner** – shows the current banner, allows clearing it, and provides a form to set a new message/tone/sticky flag.
+
+### Testing
+
+- Ran `npm test` to validate navbar, account menu, and app wiring.
+- Manually verified end-to-end flows:
+  - `/api/me` hydration into the navbar account menu.
+  - Pro / Admin badges rendering based on backend state.
+  - `Launch AutoDeploy` behavior for Pro vs non-Pro users (including banner upsell).
+  - System banner showing on page load when configured via the Admin Console.
+  - Admin Console user list and promote/demote buttons updating roles correctly.

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useCurrentUser } from "../lib/currentUser";
+import { openAgentApp } from "../lib/api";
 import { DocsSearchDialog } from "./navbar/DocsSearchDialog";
 import { DesktopNavLinks } from "./navbar/DesktopNavLinks";
 import { MobileMenu } from "./navbar/MobileMenu";
@@ -12,13 +13,17 @@ import { BrandButton } from "./navbar/BrandButton";
 import { AccountMenu } from "./navbar/AccountMenu";
 
 
-export type Page = "home" | "privacy" | "terms" | "contact" | "docs";
+export type Page = "home" | "privacy" | "terms" | "contact" | "docs" | "admin";
 type NavbarProps = {
   page: Page;
   setPage: (page: Page) => void;
+  /**
+   * When true, the navbar is offset to sit below the global banner.
+   */
+  hasBanner?: boolean;
 };
 
-export default function Navbar({ page, setPage }: NavbarProps) {
+export default function Navbar({ page, setPage, hasBanner = false }: NavbarProps) {
   const user = useCurrentUser();
   const { isAuthenticated, displayName, displayEmail, initials, isPro, isAdmin } =
     getUserDisplay(user);
@@ -48,7 +53,11 @@ export default function Navbar({ page, setPage }: NavbarProps) {
 
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/15 bg-black/40 backdrop-blur">
+    <nav
+      className={`fixed inset-x-0 border-b border-white/15 bg-black/40 backdrop-blur z-40 ${
+        hasBanner ? "top-10" : "top-0"
+      }`}
+    >
       <div className="w-full px-3 sm:px-4 lg:px-8 py-1 md:py-2">
         <div className="w-full flex items-center gap-3 md:gap-4 rounded-full border border-white/15 bg-white/5 backdrop-blur shadow-glass px-3 lg:px-6 py-1 md:py-1.5">
           {/* Left: logo / brand */}
@@ -102,6 +111,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               isPro={isPro}
               isAdmin={isAdmin}
               onOpenDocs={() => setPage("docs")}
+              onOpenAgent={openAgentApp}
+              onOpenAdmin={isAdmin ? () => setPage("admin") : undefined}
             />
 
             <button

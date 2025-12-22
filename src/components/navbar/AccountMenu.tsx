@@ -10,6 +10,8 @@ type AccountMenuProps = {
   isPro: boolean;
   isAdmin: boolean;
   onOpenDocs: () => void;
+  onOpenAgent: () => void;
+  onOpenAdmin?: () => void;
 };
 
 export function AccountMenu({
@@ -20,6 +22,8 @@ export function AccountMenu({
   isPro,
   isAdmin,
   onOpenDocs,
+  onOpenAgent,
+  onOpenAdmin,
 }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
 
@@ -70,6 +74,33 @@ export function AccountMenu({
             </div>
           </div>
 
+          {isAuthenticated && (
+            <div className="border-b border-white/10">
+              <div className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Product
+              </div>
+              <div className="py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isPro) {
+                      window.showBanner?.(
+                        "The deployment agent is a Pro feature. During beta you may be granted access; contact the AutoDeploy team or upgrade when available.",
+                        "warning",
+                      );
+                      return;
+                    }
+                    onOpenAgent();
+                    setOpen(false);
+                  }}
+                  className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+                >
+                  {isPro ? "Launch AutoDeploy" : "Launch AutoDeploy (Pro)"}
+                </button>
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             className="w-full px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-white/5 text-left border-b border-white/10"
@@ -93,6 +124,21 @@ export function AccountMenu({
             Resources
           </div>
           <div className="py-1">
+            {isAdmin && onOpenAdmin && (
+              <button
+                type="button"
+                className="w-full px-4 py-2 text-sm text-amber-200 hover:bg-amber-500/10 text-left flex items-center justify-between"
+                onClick={() => {
+                  onOpenAdmin();
+                  setOpen(false);
+                }}
+              >
+                <span>Admin Console</span>
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-amber-200">
+                  Admin
+                </span>
+              </button>
+            )}
             <button
               type="button"
               className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
