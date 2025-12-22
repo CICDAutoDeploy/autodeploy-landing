@@ -146,6 +146,23 @@ Hosting on:
 - 📄 **Repository:** https://github.com/CICDAutoDeploy/autodeploy-landing
 
 
+## 🔐 Auth & User Model Overview
+
+The landing SPA integrates with the AutoDeploy backend's authentication system to show account state and pro/admin status in the navbar.
+
+- Backend sets an HTTP-only `mcp_session` cookie after local or GitHub OAuth login.
+- Frontend calls `GET ${VITE_API_BASE_URL}/api/me` (via `fetchCurrentUser()`) to hydrate:
+  - `isAuthenticated`
+  - `name`, `email`
+  - `isPro` – based on backend `plan` and `beta_pro_granted` flags.
+  - `isAdmin` – based on backend `role` (`SYSTEM_ADMIN`).
+- The navbar account menu uses this to:
+  - Swap between "Log in" and "Log out" actions.
+  - Show initials/email for authenticated users.
+  - Render "Pro" / "Admin" badges when applicable.
+
+For more detail, see `readme/auth.md` in this repo and `AUTH.md` in the backend repo.
+
 ## 🔐 Environment Variables
 
 This project requires a Vite environment file to configure Supabase access.

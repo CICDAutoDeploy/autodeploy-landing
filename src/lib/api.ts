@@ -48,6 +48,12 @@ export type ApiSessionUser = {
   name?: string | null;
   email?: string | null;
   github_username?: string | null;
+
+  // New fields coming from backend /api/me
+  role?: 'USER' | 'SYSTEM_ADMIN';
+  plan?: 'free' | 'pro';
+  beta_pro_granted?: boolean;
+  created_at?: string;
 };
 
 /**
@@ -61,6 +67,8 @@ export async function fetchCurrentUser(): Promise<{
   isAuthenticated: boolean;
   name: string | null;
   email: string | null;
+  isPro: boolean;
+  isAdmin: boolean;
 }> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/me`, {
@@ -70,7 +78,13 @@ export async function fetchCurrentUser(): Promise<{
     if (!res.ok) {
       // 401/403 → treat as unauthenticated without throwing.
       if (res.status === 401 || res.status === 403) {
-        return { isAuthenticated: false, name: null, email: null };
+        return {
+          isAuthenticated: false,
+          name: null,
+          email: null,
+          isPro: false,
+          isAdmin: false,
+        };
       }
       throw new Error(`fetchCurrentUser failed with status ${res.status}`);
     }
@@ -82,18 +96,35 @@ export async function fetchCurrentUser(): Promise<{
     const name = (data.name ?? data.github_username ?? null) ?? null;
     const email = data.email ?? null;
 
+    const isAdmin = data.role === 'SYSTEM_ADMIN';
+    const isPro = !!data && (data.plan === 'pro' || data.beta_pro_granted === true);
+
     if (!name && !email) {
       // Session exists but we don't have any identifying info; still treat as authed.
-      return { isAuthenticated: true, name: null, email: null };
+      return {
+        isAuthenticated: true,
+        name: null,
+        email: null,
+        isPro,
+        isAdmin,
+      };
     }
 
     return {
       isAuthenticated: true,
       name,
       email,
+      isPro,
+      isAdmin,
     };
   } catch (error) {
     console.error("fetchCurrentUser error", error);
-    return { isAuthenticated: false, name: null, email: null };
+    return {
+      isAuthenticated: false,
+      name: null,
+      email: null,
+      isPro: false,
+      isAdmin: false,
+    };
   }
 }

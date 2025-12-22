@@ -8,12 +8,18 @@ export type CurrentUser = {
   name: string | null;
   /** Primary email address */
   email: string | null;
+  /** Whether this user should see pro features (plan/beta flags) */
+  isPro: boolean;
+  /** Whether this user is a system admin */
+  isAdmin: boolean;
 };
 
 const ANONYMOUS_USER: CurrentUser = {
   isAuthenticated: false,
   name: null,
   email: null,
+  isPro: false,
+  isAdmin: false,
 };
 
 /**
@@ -37,6 +43,8 @@ export function useCurrentUser(): CurrentUser {
         isAuthenticated: result.isAuthenticated,
         name: result.name,
         email: result.email,
+        isPro: result.isPro,
+        isAdmin: result.isAdmin,
       });
     })();
 

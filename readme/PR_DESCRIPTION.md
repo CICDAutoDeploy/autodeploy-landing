@@ -195,3 +195,42 @@ As part of the navbar work, the account menu is now backed by the real backend s
   - `/api/me` returning the authenticated user (including `github_username` and `email`).
   - The navbar avatar showing the user initials and account menu showing the GitHub username/email, with a **Log out** action.
 - Logging out clears the session cookie on the backend and reloads the SPA; subsequent `/api/me` calls return anonymous and the account menu reverts to the unauthenticated state.
+
+---
+
+## Additional: Roles, Plans, and Beta Pro Access
+
+This branch also wires the frontend to the backend's role/plan/beta model so we can cleanly separate regular, pro, and system (admin) users and progressively roll out pro features.
+
+### Backend model (summarized)
+
+- `users.role` (enum):
+  - `USER` – regular authenticated user.
+  - `SYSTEM_ADMIN` – admin/system user in a separate trust zone.
+- `users.plan` (enum):
+  - `free` – default plan.
+  - `pro` – paid/advanced plan.
+- `users.beta_pro_granted` (boolean):
+  - Per-user flag used to treat early adopters as pro even if their plan is `free`.
+
+Global env flags:
+
+- `BETA_TREAT_ALL_AS_PRO=true` → treat **all** authenticated users as pro at the authz layer.
+- `BETA_AUTO_BETA_PRO=true` → automatically set `beta_pro_granted=true` for new signups (local or GitHub OAuth).
+
+### Frontend integration
+
+- `fetchCurrentUser()` (in `src/lib/api.ts`) now returns:
+  - `isAuthenticated`
+  - `name`, `email`
+  - `isPro` – derived from `plan === 'pro'` or `beta_pro_granted === true` (mirroring backend rules).
+  - `isAdmin` – derived from `role === 'SYSTEM_ADMIN'`.
+- `useCurrentUser()` (in `src/lib/currentUser.ts`) exposes these flags throughout the SPA.
+- `getUserDisplay()` now passes through `isPro` / `isAdmin` to the navbar.
+- `AccountMenu` renders small "Pro" and "Admin" badges next to the display name when appropriate.
+
+### Behavior
+
+- Pro/beta users see a "Pro" pill in the account menu and have access to agent-related features (gated server-side by `USE_AGENT`).
+- System admins see an "Admin" pill and can hit admin-only backend routes (e.g., `/users`, `/users/promote`, gated by `MANAGE_USERS`).
+- Free users with no beta flags see no badge and are rejected by pro-only backend endpoints once global beta is turned off.

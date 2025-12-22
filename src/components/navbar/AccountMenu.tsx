@@ -7,6 +7,8 @@ type AccountMenuProps = {
   displayEmail: string;
   initials: string;
   isAuthenticated: boolean;
+  isPro: boolean;
+  isAdmin: boolean;
   onOpenDocs: () => void;
 };
 
@@ -15,6 +17,8 @@ export function AccountMenu({
   displayEmail,
   initials,
   isAuthenticated,
+  isPro,
+  isAdmin,
   onOpenDocs,
 }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
@@ -49,7 +53,19 @@ export function AccountMenu({
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold truncate">{displayName}</div>
+              <div className="text-sm font-semibold truncate flex items-center gap-2">
+                <span>{displayName}</span>
+                {isPro && (
+                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-emerald-200">
+                    Pro
+                  </span>
+                )}
+                {isAdmin && (
+                  <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-indigo-200">
+                    Admin
+                  </span>
+                )}
+              </div>
               <div className="text-xs text-slate-400 truncate">{displayEmail}</div>
             </div>
           </div>

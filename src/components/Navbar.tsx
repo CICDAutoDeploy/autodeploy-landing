@@ -20,7 +20,7 @@ type NavbarProps = {
 
 export default function Navbar({ page, setPage }: NavbarProps) {
   const user = useCurrentUser();
-  const { isAuthenticated, displayName, displayEmail, initials } =
+  const { isAuthenticated, displayName, displayEmail, initials, isPro, isAdmin } =
     getUserDisplay(user);
 
   const { activeSection, scrollToSection } = useActiveSection({ page });
@@ -99,6 +99,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
               displayEmail={displayEmail}
               initials={initials}
               isAuthenticated={isAuthenticated}
+              isPro={isPro}
+              isAdmin={isAdmin}
               onOpenDocs={() => setPage("docs")}
             />
 

@@ -2,6 +2,8 @@ type UserLike = {
   isAuthenticated?: boolean | null;
   name?: string | null;
   email?: string | null;
+  isPro?: boolean | null;
+  isAdmin?: boolean | null;
 } | null;
 
 export function getUserDisplay(user: UserLike) {
@@ -27,5 +29,8 @@ export function getUserDisplay(user: UserLike) {
           .join("")
       : "";
 
-  return { isAuthenticated, displayName, displayEmail, initials };
+  const isPro = user?.isPro ?? false;
+  const isAdmin = user?.isAdmin ?? false;
+
+  return { isAuthenticated, displayName, displayEmail, initials, isPro, isAdmin };
 }
