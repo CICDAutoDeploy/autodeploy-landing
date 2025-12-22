@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { UserIcon } from "@heroicons/react/24/outline";
+import { startGithubLogin, logoutSession } from "../../lib/api";
 
 type AccountMenuProps = {
   displayName: string;
@@ -103,6 +104,13 @@ export function AccountMenu({
           <button
             type="button"
             className="w-full px-4 py-2.5 text-sm font-medium text-left text-red-400 hover:bg-red-500/10 border-t border-white/10"
+            onClick={() => {
+              if (isAuthenticated) {
+                void logoutSession();
+              } else {
+                startGithubLogin();
+              }
+            }}
           >
             {isAuthenticated ? "Log out" : "Log in"}
           </button>

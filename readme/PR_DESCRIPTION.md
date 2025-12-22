@@ -124,3 +124,74 @@ Some notable pieces of work included in this branch:
   - Responsive behavior at `lg` breakpoint boundaries (including navbar switching to mobile mode when sidebars collapse).
   - Any unexpected scroll/overflow behavior in non-Chromium browsers.
   - TOC highlighting / scrolling across all docs pages (intro, quickstart, pipelines, environments, secrets, integrations, and API reference docs).
+
+---
+
+## Additional: Navbar Refactor & Tests
+
+This branch also includes a follow-up refactor of the navbar itself to make it more modular and testable without changing the outward UX.
+
+### What changed in the navbar
+
+- `Navbar.tsx` now delegates most markup and side-effects to `src/components/navbar/`:
+  - `DocsSearchDialog.tsx` – docs search overlay (recent/popular docs + filtered results).
+  - `DesktopNavLinks.tsx` – desktop navigation buttons.
+  - `MobileMenu.tsx` – mobile drawer for marketing nav and docs TOC.
+  - `BrandButton.tsx` – logo button that navigates home and scrolls to the top.
+  - `AccountMenu.tsx` – account avatar + dropdown with profile/settings/resources/auth actions.
+  - `docsConfig.ts` – shared docs index/sections used by search and mobile docs nav.
+  - `useActiveSection.ts` – hook for tracking the active marketing section via scroll + IntersectionObserver.
+  - `useDocsSearch.ts` – hook for docs search state, localStorage-backed recents, and keyboard shortcuts.
+  - `userDisplay.ts` – helper for deriving display name/email/initials from `currentUser`.
+
+### Behavior (unchanged, but now encapsulated)
+
+- Marketing nav items (`Home`, `Features`, `Docs`, `Team`, `Contact`) behave exactly as before, but logic is centralized in `DesktopNavLinks` and `MobileMenu`.
+- `useActiveSection` continues to:
+  - Highlight `Features` / `Docs` / `Team` as you scroll the home page.
+  - Bias towards `Home` when near the top of the page.
+- `useDocsSearch` continues to:
+  - Open docs search on `Ctrl+K` / `Cmd+K` and close on `Esc`.
+  - Hydrate and persist recent docs in `localStorage`.
+  - Navigate to the docs page and call `window.setDocSlug` when a result is selected.
+- `AccountMenu` still uses the temporary `currentUser` model but now encapsulates its own open/close state and markup.
+
+### Tests added/updated
+
+- New unit tests:
+  - `src/test/useActiveSection.test.tsx` – validates default state, reset behavior when `page` changes, and `scrollToSection`.
+  - `src/test/useDocsSearch.test.tsx` – covers hydration from `localStorage`, open/close behavior, and `navigateToDoc` side effects.
+  - `src/test/AccountMenu.test.tsx` – ensures dropdown open/close and `Log in`/`Log out` labels are correct.
+  - `src/test/BrandButton.test.tsx` – checks navigation + scroll behavior from home vs non-home.
+- Existing suites (`Navbar.test.tsx`, `Navbar.docs-search.test.tsx`, `App.test.tsx`) have been kept passing against the refactored implementation.
+
+Reviewers can skim the new files under `src/components/navbar/` and the four new test files to understand how the navbar is now composed.
+
+---
+
+## Additional: OAuth + Current User Wiring
+
+As part of the navbar work, the account menu is now backed by the real backend session rather than a hard-coded stub.
+
+### Frontend changes
+
+- `src/lib/api.ts`:
+  - Exposes `API_BASE_URL` (from `VITE_API_BASE_URL`).
+  - Adds `startGithubLogin()` which redirects to `${API_BASE_URL}/auth/github/start` to initiate GitHub OAuth.
+  - Adds `logoutSession()` which calls `POST ${API_BASE_URL}/auth/local/logout` and reloads the page.
+  - Adds `fetchCurrentUser()` which calls `GET ${API_BASE_URL}/api/me` with `credentials: 'include'` and normalizes the nested `{ ok, user: { github_username, email, ... } }` payload into `{ isAuthenticated, name, email }`.
+- `src/lib/currentUser.ts`:
+  - Replaces the static `currentUser` with a `useCurrentUser()` hook.
+  - On mount, `useCurrentUser()` calls `fetchCurrentUser()` and updates local state; failures or 401/403 responses fall back to an anonymous user.
+- `src/components/Navbar.tsx`:
+  - Uses `useCurrentUser()` and `getUserDisplay()` to derive `displayName`, `displayEmail`, and initials for the account menu.
+- `src/components/navbar/AccountMenu.tsx`:
+  - The bottom button now calls `startGithubLogin()` when unauthenticated and `logoutSession()` when authenticated.
+
+### Behavior
+
+- Logging in via GitHub OAuth now results in:
+  - A backend-set `mcp_session` cookie.
+  - `/api/me` returning the authenticated user (including `github_username` and `email`).
+  - The navbar avatar showing the user initials and account menu showing the GitHub username/email, with a **Log out** action.
+- Logging out clears the session cookie on the backend and reloads the SPA; subsequent `/api/me` calls return anonymous and the account menu reverts to the unauthenticated state.

@@ -6,7 +6,7 @@ import type { Page } from '../components/Navbar';
 
 declare global {
   interface Window {
-    setDocSlug?: (slug: string) => void;
+    setDocSlug?: (slug: import('../components/docs/types').DocSlug) => void;
   }
 }
 

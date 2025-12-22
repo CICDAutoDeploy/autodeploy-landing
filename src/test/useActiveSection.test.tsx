@@ -9,10 +9,14 @@ class MockIntersectionObserver implements IntersectionObserver {
   readonly rootMargin: string = '';
   readonly thresholds: ReadonlyArray<number> = [];
 
-  constructor(
-    public callback: IntersectionObserverCallback,
-    public options?: IntersectionObserverInit,
-  ) {}
+  // Use fields instead of constructor parameters to avoid TS 'erasableSyntaxOnly' issues.
+  callback: IntersectionObserverCallback;
+  options?: IntersectionObserverInit;
+
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+    this.callback = callback;
+    this.options = options;
+  }
 
   observe = vi.fn();
   unobserve = vi.fn();
@@ -55,8 +59,7 @@ describe('useActiveSection', () => {
     const target = document.createElement('div');
     target.id = 'features';
     const scrollIntoView = vi.fn();
-    // @ts-expect-error override for test
-    target.scrollIntoView = scrollIntoView;
+    (target as any).scrollIntoView = scrollIntoView;
     document.body.appendChild(target);
 
     act(() => {

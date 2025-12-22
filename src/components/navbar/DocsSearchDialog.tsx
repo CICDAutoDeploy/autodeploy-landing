@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import type { DocsIndexItem } from "./docsConfig";
+
 type DocsSearchDialogProps = {
   open: boolean;
   query: string;
@@ -7,7 +8,7 @@ type DocsSearchDialogProps = {
   recentDocs: DocsIndexItem[];
   popularDocs: DocsIndexItem[];
   filteredDocs: DocsIndexItem[];
-  onSelectDoc: (slug: DocSlug) => void;
+  onSelectDoc: (slug: DocsIndexItem["slug"]) => void;
   onClose: () => void;
 };
 

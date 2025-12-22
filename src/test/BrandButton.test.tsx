@@ -5,9 +5,9 @@ import type { Page } from '../components/Navbar';
 
 describe('BrandButton', () => {
   beforeEach(() => {
-    // jsdom doesn't implement scrollTo by default
-    // @ts-expect-error override for test
-    window.scrollTo = vi.fn();
+    // jsdom doesn't implement scrollTo by default in the test environment
+    // but it exists in real browsers. Override the type to avoid TS complaints.
+    (window as any).scrollTo = vi.fn();
   });
 
   it('navigates to home and scrolls to top when not already on home', () => {

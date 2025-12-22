@@ -51,8 +51,8 @@ autodeploy-landing/
 │  │  └─ Terms.tsx
 │  ├─ lib/
 │  │  ├─ supabase.ts         # Supabase client for waitlist
-│  │  ├─ api.ts              # Lightweight REST helpers (e.g., backend health)
-│  │  └─ currentUser.ts      # Temporary current user model for navbar account menu
+│  │  ├─ api.ts              # Lightweight REST + auth helpers (health, OAuth, current user)
+│  │  └─ currentUser.ts      # useCurrentUser() hook hydrated from backend /api/me
 │  ├─ App.tsx                # App orchestration / routing
 │  ├─ main.tsx              # Entry point
 │  └─ index.css
@@ -162,6 +162,7 @@ Create a file named `.env` in the **root directory** of the project with the fol
 ```
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_API_BASE_URL=http://localhost:3000   # URL of the AutoDeploy backend (for /health, /api/me, OAuth)
 ```
 
 ### Setup notes

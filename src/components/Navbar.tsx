@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { currentUser } from "../lib/currentUser";
+import { useCurrentUser } from "../lib/currentUser";
 import { DocsSearchDialog } from "./navbar/DocsSearchDialog";
 import { DesktopNavLinks } from "./navbar/DesktopNavLinks";
 import { MobileMenu } from "./navbar/MobileMenu";
@@ -19,7 +19,7 @@ type NavbarProps = {
 };
 
 export default function Navbar({ page, setPage }: NavbarProps) {
-  const user = currentUser;
+  const user = useCurrentUser();
   const { isAuthenticated, displayName, displayEmail, initials } =
     getUserDisplay(user);
 
