@@ -18,12 +18,12 @@ export default function ContactPage() {
           <p className="font-medium">team@autodeploy.app</p>
         </div>
 
-        <div>
+        {/* <div>
           <h2 className="text-2xl font-semibold mt-6 mb-2">
             Business & Partnerships
           </h2>
           <p className="font-medium">partners@autodeploy.app</p>
-        </div>
+        </div> */}
 
         <p className="mt-6">
           We typically respond within 24–48 hours during the week.
