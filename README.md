@@ -48,9 +48,11 @@ autodeploy-landing/
 │  │  ├─ Contact.tsx
 │  │  ├─ Privacy.tsx
 │  │  └─ Terms.tsx
-│  ├─ lib/
-│  │  └─ supabase.ts
-│  ├─ App.tsx               # App orchestration / routing
+|│  ├─ lib/|
+|│  │  ├─ supabase.ts        # Supabase client for waitlist
+|│  │  ├─ api.ts             # Lightweight REST helpers (e.g., backend health)
+|│  │  └─ currentUser.ts     # Temporary current user model for navbar account menu
+|│  ├─ App.tsx               # App orchestration / routing
 │  ├─ main.tsx              # Entry point
 │  └─ index.css
 ├─ index.html

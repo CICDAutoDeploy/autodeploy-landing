@@ -30,17 +30,24 @@ Some notable pieces of work included in this branch:
 - **Navbar + footer refinements**  
   - Center-aligned desktop nav with `Home / Features / Docs / Team / Contact`.
   - Dynamic-island style dark glass navbar pill with matching footer bar.
-  - Docs-style search pill (`Search docs…` + `Ctrl K`) and GitHub icon on the right.
+  - Docs-style search pill (`Search docs…` + `Ctrl K`) and GitHub/account menu on the right.
   - Keyboard shortcut handling for `Ctrl+K` / `Cmd+K` and `Esc` to open/close the docs search dialog.
   - Recent + popular docs surfaced inside the search dialog with localStorage-backed "recent" history.
-- Desktop/mobile docs search overlay that subtly blurs the docs content column while keeping sidebars legible, now tuned to follow the visible docs viewport and align with the middle column.
+  - Desktop/mobile docs search overlay that subtly blurs the docs content column while keeping sidebars legible, now tuned to follow the visible docs viewport and align with the middle column. The click-away backdrop is now constrained to *below* the navbar so it no longer blocks interaction or inspection of the top bar.
+  - Back-to-top button behavior refined to match the new dark glass shell and avoid conflicting with the docs search dialog.
   - Mobile breakpoint moved to `lg` so the hamburger mode kicks in when docs sidebars collapse.
   - When on the docs page in mobile view, the drawer shows the docs TOC instead of just top-level nav.
   - Vitest coverage for docs search behavior (filtering, keyboard shortcuts, recent docs, and navigation side effects).
 
+- **Account menu + health wiring**  
+  - Replaced the static GitHub icon in the navbar with an account avatar + dropdown menu (View Profile, Settings, Resources, and auth action).  
+  - Introduced an anonymous `currentUser` model that renders a generic avatar and label when signed out, and initials/name/email when GitHub OAuth is wired in.  
+  - Added a small `api.ts` helper and `/health` call used for wiring future settings/debug UI, while keeping that control hidden from the main marketing surface.
+
 - **Docs content + MCP**  
   - Added user-facing KB pages for pipelines, environments, secrets, GitHub Actions, AWS & GCP, authentication, deployments, and logs.
   - Introduced an MCP core-concepts page explaining how AutoDeploy uses MCP behind the scenes, with full TOC integration.
+  - Refined the MCP docs content and examples (`FrontendMcp`) to better match the current product behavior.
 
 ## Implementation Details
 

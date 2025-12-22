@@ -89,7 +89,10 @@ export default function App() {
       {page === "docs" && <DocsPage />}
 
       <Footer setPage={setPage} />
+      {/* Global back-to-top for the marketing home page (window scroll). */}
       <BackToTop enabled={page === "home"} />
+      {/* Docs-specific back-to-top that targets the middle scrollable column. */}
+      <BackToTop enabled={page === "docs"} targetId="docs-scroll" />
     </div>
   );
 }

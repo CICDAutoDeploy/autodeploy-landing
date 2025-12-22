@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon, UserIcon } from "@heroicons/react/24/outline";
 import type { DocSlug } from "./docs/types";
+import { currentUser } from "../lib/currentUser";
 
 const docsSections: { title: string; items: { slug: DocSlug; label: string }[] }[] = [
   {
@@ -55,21 +56,6 @@ const POPULAR_DOCS: DocsIndexItem[] = [
 
 const RECENT_STORAGE_KEY = "autodeploy-docs-recent";
 
-function GitHubMarkIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-    >
-      <path
-        fill="currentColor"
-        d="M12 2C6.48 2 2 6.58 2 12.26c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.27 2.75 1.05A9.28 9.28 0 0 1 12 6.07c.85 0 1.7.12 2.5.35 1.9-1.32 2.74-1.05 2.74-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.6.69.49A10.03 10.03 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"
-      />
-    </svg>
-  );
-}
-
 type Page = "home" | "privacy" | "terms" | "contact" | "docs";
 
 type NavbarProps = {
@@ -78,6 +64,19 @@ type NavbarProps = {
 };
 
 export default function Navbar({ page, setPage }: NavbarProps) {
+  const user = currentUser;
+  const isAuthenticated = user?.isAuthenticated ?? false;
+  const displayName = isAuthenticated && user?.name ? user.name : "Anonymous";
+  const displayEmail = isAuthenticated && user?.email ? user.email : "Not signed in";
+  const initials = isAuthenticated && user?.name
+    ? user.name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase() ?? "")
+        .join("")
+    : "";
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -94,6 +93,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
   const [docsSearchOpen, setDocsSearchOpen] = useState(false);
   const [docsSearchQuery, setDocsSearchQuery] = useState("");
   const [recentDocs, setRecentDocs] = useState<DocsIndexItem[]>([]);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     if (page !== "home") {
@@ -266,7 +266,8 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             }}
             className="text-xl font-extrabold tracking-tight text-white"
           >
-            AutoDeploy
+            <span className="inline sm:hidden">AD</span>
+            <span className="hidden sm:inline">AutoDeploy</span>
           </button>
         </div>
 
@@ -375,41 +376,124 @@ export default function Navbar({ page, setPage }: NavbarProps) {
             </button>
           </div>
 
-          {/* Right: docs search (desktop) + GitHub + mobile toggle */}
-          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={openDocsSearch}
-            className="hidden lg:inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm hover:bg-white/10"
-          >
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
-              <MagnifyingGlassIcon className="h-3.5 w-3.5" />
-            </span>
-            <span className="whitespace-nowrap">Search docs...</span>
-            <span className="ml-1 rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-slate-300">
-              Ctrl K
-            </span>
-          </button>
+          {/* Right: docs search (desktop) + account menu + mobile toggle */}
+          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3 relative">
+            <button
+              type="button"
+              onClick={openDocsSearch}
+              className="hidden lg:inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm hover:bg-white/10"
+            >
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
+                <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+              </span>
+              <span className="whitespace-nowrap">Search docs...</span>
+              <span className="ml-1 rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-slate-300">
+                Ctrl K
+              </span>
+            </button>
 
-          <button
-            type="button"
-            className="hidden lg:inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 p-2 text-slate-100 hover:bg-white/10"
-            aria-label="Continue with GitHub"
-          >
-            <GitHubMarkIcon className="h-4 w-4" />
-          </button>
+            {/* Profile menu trigger (replaces GitHub icon) */}
+            <button
+              type="button"
+              onClick={() => setUserMenuOpen((open) => !open)}
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 p-0.5 text-slate-100 shadow-sm hover:bg-white/10"
+              aria-label="Open account menu"
+              aria-haspopup="menu"
+              aria-expanded={userMenuOpen}
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/80 text-slate-50">
+                {initials ? (
+                  <span className="text-xs font-semibold leading-none">
+                    {initials}
+                  </span>
+                ) : (
+                  <UserIcon className="h-5 w-5" />
+                )}
+              </span>
+            </button>
 
-          <button
-            onClick={() => setMobileOpen((open) => !open)}
-            className="lg:hidden p-2 rounded-md hover:bg-white/10 text-slate-100"
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? (
-              <XMarkIcon className="h-6 w-6" />
-            ) : (
-              <Bars3Icon className="h-6 w-6" />
+            {userMenuOpen && (
+<div className="absolute right-3 top-[4.70rem] z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-white/15 bg-black/80 text-slate-100 shadow-glass backdrop-blur overflow-hidden">
+                <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-white/10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/80 text-slate-50">
+                    {initials ? (
+                      <span className="text-xs font-semibold leading-none">
+                        {initials}
+                      </span>
+                    ) : (
+                      <UserIcon className="h-6 w-6" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-semibold truncate">{displayName}</div>
+                    <div className="text-xs text-slate-400 truncate">{displayEmail}</div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="w-full px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-white/5 text-left border-b border-white/10"
+                >
+                  View Profile
+                </button>
+
+                <div className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  Settings &amp; Security
+                </div>
+                <div className="py-1">
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+                  >
+                    Settings
+                  </button>
+                </div>
+
+                <div className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  Resources
+                </div>
+                <div className="py-1">
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+                  >
+                    What's New
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+                    onClick={() => setPage("docs")}
+                  >
+                    Documentation
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2 text-sm text-slate-200 hover:bg-white/5 text-left"
+                  >
+                    Help &amp; Support
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className="w-full px-4 py-2.5 text-sm font-medium text-left text-red-400 hover:bg-red-500/10 border-t border-white/10"
+                >
+                  {isAuthenticated ? "Log out" : "Log in"}
+                </button>
+              </div>
             )}
-          </button>
+
+            <button
+              onClick={() => setMobileOpen((open) => !open)}
+              className="lg:hidden p-2 rounded-md hover:bg-white/10 text-slate-100"
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
+            </button>
           </div>
         </div>
       </div>
@@ -417,7 +501,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
       {docsSearchOpen && (
         <div className="fixed inset-0 z-40 flex items-start justify-center pt-24 px-4">
           <div
-            className="absolute inset-0 bg-transparent"
+            className="absolute inset-x-0 bottom-0 top-[4.5rem] bg-transparent"
             onClick={closeDocsSearch}
           />
           {/* Docs search dialog - match navbar island darkness */}
@@ -529,7 +613,7 @@ export default function Navbar({ page, setPage }: NavbarProps) {
 
       {(
         <div
-          className={`lg:hidden fixed top-16 right-4 z-40 bg-gradient-to-b from-slate-900/80 via-slate-800/75 to-slate-900/85 border border-white/25 rounded-2xl w-fit min-w-[1rem] overflow-hidden transform transition-all duration-300 ease-out shadow-glass backdrop-blur-xl ${
+          className={`lg:hidden fixed top-16 right-4 z-40 rounded-2xl w-fit min-w-[1rem] overflow-hidden border border-white/15 bg-black/60 shadow-glass backdrop-blur transform transition-all duration-300 ease-out ${
             mobileOpen
               ? "translate-x-0 opacity-100"
               : "translate-x-8 opacity-0 pointer-events-none"
@@ -659,6 +743,16 @@ export default function Navbar({ page, setPage }: NavbarProps) {
         <div
           className="lg:hidden fixed inset-0 z-30 bg-black/60"
           onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile backdrop for account menu */}
+      {userMenuOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setUserMenuOpen(false)}
+          aria-hidden="true"
         />
       )}
     </nav>

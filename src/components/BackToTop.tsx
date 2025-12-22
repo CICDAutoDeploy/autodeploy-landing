@@ -3,11 +3,17 @@ import { useEffect, useState } from "react";
 type BackToTopProps = {
   enabled?: boolean;
   threshold?: number;
+  /**
+   * Optional ID of a scrollable container to control instead of the window.
+   * Used on the docs page to target the `#docs-scroll` middle column.
+   */
+  targetId?: string;
 };
 
 export default function BackToTop({
   enabled = true,
   threshold = 400,
+  targetId,
 }: BackToTopProps) {
   const [visible, setVisible] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(24); // px, matches bottom-6
@@ -17,8 +23,16 @@ export default function BackToTop({
       return;
     }
 
+    const scrollTarget = targetId
+      ? ((document.getElementById(targetId) as HTMLElement | null) ?? window)
+      : window;
+
     const onScroll = () => {
-      setVisible(window.scrollY > threshold);
+      if (scrollTarget instanceof Window) {
+        setVisible(scrollTarget.scrollY > threshold);
+      } else {
+        setVisible(scrollTarget.scrollTop > threshold);
+      }
 
       // Nudge the button up when the footer comes into view so it doesn't overlap.
       const footer = document.querySelector("footer");
@@ -38,15 +52,31 @@ export default function BackToTop({
       }
     };
 
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [enabled, threshold]);
+    const targetForListener: HTMLElement | Window = scrollTarget;
+    targetForListener.addEventListener("scroll", onScroll);
+
+    return () => {
+      targetForListener.removeEventListener("scroll", onScroll as any);
+    };
+  }, [enabled, threshold, targetId]);
 
   if (!enabled) return null;
 
+  const handleClick = () => {
+    const scrollTarget = targetId
+      ? ((document.getElementById(targetId) as HTMLElement | null) ?? window)
+      : window;
+
+    if (scrollTarget instanceof Window) {
+      scrollTarget.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      scrollTarget.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <button
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      onClick={handleClick}
       aria-label="Back to top"
       style={{ bottom: `${bottomOffset}px` }}
       className={`fixed right-6 z-50 rounded-full border border-white/30 bg-white/10 text-slate-100 p-3 shadow-glass backdrop-blur-md transition-all duration-300 ease-out hover:bg-white/20
