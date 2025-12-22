@@ -39,20 +39,21 @@ autodeploy-landing/
 │  │  ├─ Footer.tsx
 │  │  ├─ Hero.tsx
 │  │  ├─ HowItWorks.tsx
-│  │  ├─ Navbar.tsx
+│  │  ├─ Navbar.tsx          # Top-level navbar that wires subcomponents/hooks
+│  │  ├─ navbar/             # Extracted navbar components & hooks (DocsSearchDialog, MobileMenu, etc.)
 │  │  ├─ ProblemSolution.tsx
 │  │  └─ Team.tsx
 │  ├─ hooks/
-│  │  └─ useWaitlist.ts     # Shared waitlist logic
+│  │  └─ useWaitlist.ts      # Shared waitlist logic
 │  ├─ pages/
 │  │  ├─ Contact.tsx
 │  │  ├─ Privacy.tsx
 │  │  └─ Terms.tsx
-|│  ├─ lib/|
-|│  │  ├─ supabase.ts        # Supabase client for waitlist
-|│  │  ├─ api.ts             # Lightweight REST helpers (e.g., backend health)
-|│  │  └─ currentUser.ts     # Temporary current user model for navbar account menu
-|│  ├─ App.tsx               # App orchestration / routing
+│  ├─ lib/
+│  │  ├─ supabase.ts         # Supabase client for waitlist
+│  │  ├─ api.ts              # Lightweight REST helpers (e.g., backend health)
+│  │  └─ currentUser.ts      # Temporary current user model for navbar account menu
+│  ├─ App.tsx                # App orchestration / routing
 │  ├─ main.tsx              # Entry point
 │  └─ index.css
 ├─ index.html
@@ -102,6 +103,20 @@ Open the site at:
 ```
 http://localhost:5173
 ```
+
+---
+
+## 🧪 Testing
+Run the test suite (Vitest + Testing Library):
+```bash
+npm test
+```
+
+This covers:
+- Navbar behavior (desktop + mobile + docs search)
+- Extracted navbar hooks (`useActiveSection`, `useDocsSearch`)
+- Account menu and brand button
+- Waitlist flow and global toast wiring
 
 ---
 
