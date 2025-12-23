@@ -279,3 +279,41 @@ A small UX follow-up was made to polish the navbar overlays:
 
 - **Account menu**: the dropdown is now anchored to the avatar button (no hard-coded top offset), supports click-away + `Esc` to close, and focuses the first item when opened.
 - **Docs search (desktop)**: the `Search docs...` pill no longer disappears when the inline search menu opens; it stays visible and toggles open/close.
+
+---
+
+## Update: MCP v1 Demos and Typed Helpers (Marketing Site)
+
+This follow-up adds a thin but functional bridge between the marketing/docs SPA and the AutoDeploy backend’s MCP v1 surface.
+
+### What’s new
+
+- **Live MCP status callout in docs**
+  - New `McpStatusCallout` component under `src/components/docs/McpStatusCallout.tsx`.
+  - Calls `GET /mcp/v1/status` via a typed `fetchMcpStatus()` helper in `src/lib/api.ts`.
+  - Shows current v1 status, version, and the list of registered MCP tools, with a deprecation note pointing at v2 when present.
+  - Renders on the "MCP" frontend docs page (`FrontendMcp`) so readers can see a "live" reflection of the backend.
+
+- **Typed MCP v1 helpers in the landing SPA**
+  - Extended `src/lib/api.ts` with:
+    - `MCP_V1_BASE_URL` – shared base for `/mcp/v1` calls.
+    - Envelope types for v1 tool responses (`success`) and pipeline routes (`ok`).
+    - `callMcpTool()` – generic helper for `/mcp/v1/:tool_name`.
+    - `fetchPipelineHistory()`, `rollbackPipeline()`, and `commitPipeline()` – wrappers around `/mcp/v1/pipeline_history`, `/mcp/v1/pipeline_rollback`, and `/mcp/v1/pipeline_commit` using the v1 envelopes.
+    - Typed wrappers: `mcpListRepos()` / `mcpGetRepo()` (repo_reader), `mcpGeneratePipeline()` (pipeline_generator), `mcpListAwsRoles()` / `mcpListJenkinsJobs()` (oidc_adapter).
+
+- **Home page MCP demo panel**
+  - The “How AutoDeploy works” section now includes a **Demo** button.
+  - Clicking "Demo" toggles an inline panel directly under the header (above the step-by-step explanation) that wires up:
+    - `McpRepoListDemo` – calls `mcpListRepos()`/`repo_reader` and shows up to three repositories visible to the current session.
+    - `PipelineHistoryDemo` – lets a user enter `owner/repo` and calls `fetchPipelineHistory()` to show the most recent stored pipeline versions.
+  - When the backend is not running or the user/session lacks access, both demos fall back to explanatory copy instead of erroring.
+
+- **Backend GitHub Actions docs integration**
+  - The backend docs page for GitHub Actions (`BackendGithubActions`) now embeds the same `McpRepoListDemo` and `PipelineHistoryDemo` components beneath the MCP adapter and workflow sections.
+  - This gives reviewers and users a direct way to hit MCP v1 endpoints from the docs UI when testing end-to-end flows.
+
+### Notes for reviewers
+
+- All new MCP calls are defensive (envelope-aware, null-safe) and use `credentials: 'include'` so they respect the existing `mcp_session` cookie.
+- The marketing SPA remains safe to host independently: when the backend is unreachable, the demos degrade gracefully without blocking the rest of the page.

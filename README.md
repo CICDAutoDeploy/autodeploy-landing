@@ -30,6 +30,7 @@ Setting up CI/CD pipelines is often slow, error‑prone, and inconsistent across
   - Desktop docs search pill stays visible while the inline search menu is open
 - Top-of-page banner system for Pro upsell and system-wide notices
 - Admin Console page for managing system banners and admin users
+- **MCP-backed live demos** on the home page “How AutoDeploy works” section, showing repo_reader and pipeline_history results when connected to the backend
 
 ---
 

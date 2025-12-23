@@ -1,3 +1,5 @@
+import McpRepoListDemo from "../McpRepoListDemo";
+import PipelineHistoryDemo from "../PipelineHistoryDemo";
 
 export default function BackendGithubActions() {
   return (
@@ -46,6 +48,8 @@ export default function BackendGithubActions() {
         workflow files via the GitHub REST API, always using tokens from <code>connections</code>.
       </p>
 
+      <McpRepoListDemo />
+
       <h2 id="backend-github-workflows" className="text-2xl font-bold text-white mt-8 mb-4 scroll-mt-24">
         Workflow commits &amp; history
       </h2>
@@ -67,6 +71,8 @@ export default function BackendGithubActions() {
           rollback.
         </li>
       </ul>
+
+      <PipelineHistoryDemo />
 
       <h2 id="backend-github-deployments" className="text-2xl font-bold text-white mt-8 mb-4 scroll-mt-24">
         Deployments API

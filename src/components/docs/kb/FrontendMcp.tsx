@@ -6,6 +6,8 @@ export const mcpToc = [
   { id: "mcp-safety", label: "Safety and control" },
 ];
 
+import McpStatusCallout from "../McpStatusCallout";
+
 export default function FrontendMcp() {
   return (
     <div className="prose prose-invert max-w-none">
@@ -31,6 +33,8 @@ export default function FrontendMcp() {
         your repository, generate pipelines, and talk to cloud services. You don&apos;t have to interact
         with MCP directly, but it powers many of the smart features in the wizard.
       </p>
+
+      <McpStatusCallout />
 
       <h2
         id="mcp-overview"
