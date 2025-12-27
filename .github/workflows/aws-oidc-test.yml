@@ -1,10 +1,7 @@
-name: AWS OIDC Test
+name: AWS AUTH Check
 
 on:
   workflow_dispatch:   # manual trigger
-  push:
-    branches:
-      - main
 
 permissions:
   id-token: write      # REQUIRED for OIDC
