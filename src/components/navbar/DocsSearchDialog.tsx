@@ -28,7 +28,9 @@ export function DocsSearchDialog({
 
   return (
     <div
-      className={`fixed inset-0 z-40 flex items-start justify-center px-4 ${wrapperClassName ?? ""}`}
+      className={`fixed inset-0 z-40 flex items-start justify-center px-4 bg-black/40 ${
+        wrapperClassName ?? ""
+      }`}
     >
       <div className="w-full max-w-md">
         <DocsSearchMenu

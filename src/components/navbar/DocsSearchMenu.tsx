@@ -28,7 +28,9 @@ export function DocsSearchMenu({
 
   return (
     <div
-      className={`w-full rounded-2xl border border-white/15 bg-slate-900 shadow-glass overflow-hidden text-sm text-slate-100 flex flex-col max-h-[calc(100vh-6rem)] ${className ?? ""}`}
+      className={`w-full rounded-2xl border border-white/15 bg-black/80 backdrop-blur shadow-glass overflow-hidden text-sm text-slate-100 flex flex-col max-h-[calc(100vh-6rem)] ${
+        className ?? ""
+      }`}
     >
       <div className="flex items-center gap-2 px-4 py-2 border-b border-white/10 bg-transparent flex-none">
         <MagnifyingGlassIcon className="h-4 w-4 text-slate-300" />
