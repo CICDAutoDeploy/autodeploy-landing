@@ -39,3 +39,26 @@ Frontend changes (autodeploy-landing):
 Notes / Rationale:
 - These demos are intentionally mock-only and no longer depend on `mcpListRepos` or `fetchPipelineHistory`.
 - The layout and copy still highlight what AutoDeploy does (repo understanding, template generation, pipeline hardening) while avoiding live API flakiness in the docs/marketing experience.
+
+---
+
+## 2025-12-29 – Landing demo mode flag + test hardening
+
+Summary:
+- Introduced a `VITE_LANDING_MODE` flag so the marketing SPA can run in **demo** mode (no real login/app access) before launch, and ensured the test suite runs cleanly with `matchMedia` mocked.
+
+Frontend changes (autodeploy-landing):
+- `src/lib/api.ts`:
+  - Added `LandingMode`, `LANDING_MODE`, and `IS_DEMO_MODE` derived from `import.meta.env.VITE_LANDING_MODE` (defaults to `'demo'`).
+- `src/lib/currentUser.ts`:
+  - In demo mode, skips calling `/api/me` and always returns the anonymous user.
+- `src/components/navbar/AccountMenu.tsx`:
+  - In demo mode, keeps the avatar icon but replaces the menu with a short "app isn’t live yet" message and a **View docs** button.
+  - Disables real auth actions and changes the bottom button label to `Sign-in disabled (demo)`.
+- `src/test/*.test.tsx`:
+  - Added lightweight `window.matchMedia` mocks for Navbar- and App-related tests.
+  - Aligned `showBanner` typings in `AccountMenu.test.tsx` with the global declaration and skip AccountMenu "live" tests when `IS_DEMO_MODE` is true.
+
+Notes:
+- The README env section documents `VITE_LANDING_MODE=demo` as the default, with `live` to be used on real launch.
+- `npm run build` and `npm test` both pass with the new wiring.

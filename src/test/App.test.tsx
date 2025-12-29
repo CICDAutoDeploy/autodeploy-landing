@@ -10,13 +10,35 @@ declare global {
 }
 
 describe('App toast wiring', () => {
+  let originalMatchMedia: typeof window.matchMedia | undefined;
+
   beforeEach(() => {
     vi.useFakeTimers();
+
+    // Mock matchMedia used by Navbar so App can render in JSDOM.
+    originalMatchMedia = window.matchMedia;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).matchMedia = (query: string) => {
+      return {
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      } as MediaQueryList;
+    };
   });
 
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
+
+    if (originalMatchMedia) {
+      window.matchMedia = originalMatchMedia;
+    }
   });
 
   it('defines window.showToast after mounting', () => {

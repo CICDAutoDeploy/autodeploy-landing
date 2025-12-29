@@ -187,6 +187,7 @@ Create a file named `.env` in the **root directory** of the project with the fol
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_API_BASE_URL=http://localhost:3000   # URL of the AutoDeploy backend (for /health, /api/me, OAuth)
+VITE_LANDING_MODE=demo                    # "demo" hides login/app entry; set to "live" on launch
 ```
 
 ### Setup notes

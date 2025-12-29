@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 
 import Navbar from '../components/Navbar';
 
@@ -14,11 +14,38 @@ function renderNavbar(initialPage: Page = 'home') {
   return { setPage, ...utils };
 }
 
+let originalMatchMedia: typeof window.matchMedia | undefined;
+
+beforeAll(() => {
+  originalMatchMedia = window.matchMedia;
+  // Basic matchMedia mock for JSDOM
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).matchMedia = (query: string) => {
+    return {
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    } as MediaQueryList;
+  };
+});
+
+afterAll(() => {
+  if (originalMatchMedia) {
+    window.matchMedia = originalMatchMedia;
+  }
+});
+
 beforeEach(() => {
   window.localStorage.clear();
   // Stub the docs slug setter used by Navbar when navigating to docs pages.
   (window as any).setDocSlug = vi.fn();
 });
+
 
 describe('Navbar docs search', () => {
   it('filters documents based on the search query', async () => {

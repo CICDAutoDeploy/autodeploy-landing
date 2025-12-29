@@ -1,2 +1,4 @@
 VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
+# Landing mode for the marketing SPA: "demo" (default) or "live".
+VITE_LANDING_MODE=demo

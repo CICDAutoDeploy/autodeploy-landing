@@ -17,7 +17,6 @@ import ProblemSolution from "./components/sections/ProblemSolution";
 import BackToTop from "./components/sections/BackToTop";
 import type { DocSlug } from "./components/docs/types";
 
-type BannerTone = "info" | "success" | "warning" | "error";
 
 type BannerState = {
   message: string;

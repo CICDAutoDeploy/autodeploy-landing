@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DocsSidebar from "../components/docs/DocsSidebar";
 import DocsOnThisPage from "../components/docs/DocsOnThisPage";
 import { DOC_COMPONENTS } from "../components/docs/docsRegistry";

@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { UserIcon } from "@heroicons/react/24/outline";
-import { startGithubLogin, logoutSession } from "../../lib/api";
+import { startGithubLogin, logoutSession, IS_DEMO_MODE } from "../../lib/api";
 
 type AccountMenuProps = {
   displayName: string;
@@ -98,21 +98,43 @@ export function AccountMenu({
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold truncate flex items-center gap-2">
                 <span>{displayName}</span>
-                {isPro && (
+                {!IS_DEMO_MODE && isPro && (
                   <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-emerald-200">
                     Pro
                   </span>
                 )}
-                {isAdmin && (
+                {!IS_DEMO_MODE && isAdmin && (
                   <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-indigo-200">
                     Admin
                   </span>
                 )}
               </div>
-              <div className="text-xs text-slate-400 truncate">{displayEmail}</div>
+              <div className="text-xs text-slate-400 truncate">
+                {IS_DEMO_MODE ? "App access coming soon" : displayEmail}
+              </div>
             </div>
           </div>
 
+          {IS_DEMO_MODE ? (
+            <div className="px-4 py-3 space-y-2 text-sm text-slate-200">
+              <p>The full AutoDeploy app isn&apos;t live yet.</p>
+              <p className="text-xs text-slate-400">
+                In demo mode you can explore the docs and marketing experience, but login and
+                account actions are disabled.
+              </p>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-md border border-emerald-400/70 bg-emerald-500/20 px-3 py-1.5 text-[11px] font-semibold text-emerald-50 hover:bg-emerald-500/30"
+                onClick={() => {
+                  onOpenDocs();
+                  setOpen(false);
+                }}
+              >
+                View docs
+              </button>
+            </div>
+          ) : (
+            <>
           {isAuthenticated && (
             <div className="border-b border-white/10">
               <div className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
@@ -222,6 +244,10 @@ export function AccountMenu({
             className="w-full px-4 py-2.5 text-sm font-medium text-left text-red-400 hover:bg-red-500/10 border-t border-white/10"
             onClick={() => {
               setOpen(false);
+              if (IS_DEMO_MODE) {
+                // In demo mode we do not expose real auth flows.
+                return;
+              }
               if (isAuthenticated) {
                 void logoutSession();
               } else {
@@ -229,8 +255,10 @@ export function AccountMenu({
               }
             }}
           >
-            {isAuthenticated ? "Log out" : "Log in"}
+            {IS_DEMO_MODE ? "Sign-in disabled (demo)" : isAuthenticated ? "Log out" : "Log in"}
           </button>
+            </>
+          )}
         </div>
       )}
 

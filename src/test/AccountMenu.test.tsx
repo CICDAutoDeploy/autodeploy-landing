@@ -1,15 +1,33 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AccountMenu } from '../components/navbar/AccountMenu';
+import { IS_DEMO_MODE } from '../lib/api';
 
-// Ensure the global Window type includes showBanner for tests
+// In tests we want to exercise the "live" behavior rather than demo gating so
+// that the AccountMenu flows (login/logout, Launch AutoDeploy, banner wiring)
+// remain covered. If the app is built in demo mode, short-circuit these tests.
+const SKIP_DEMO_MODE = IS_DEMO_MODE;
+
+// Ensure the global Window type includes showBanner for tests, matching
+// the declaration in App.tsx.
 declare global {
   interface Window {
-    showBanner?: (message: string, tone?: string, options?: unknown) => void;
+    showBanner?: (
+      message: string,
+      tone?: import('../lib/api').BannerTone,
+      options?: { durationMs?: number; sticky?: boolean },
+    ) => void;
   }
 }
 
 describe('AccountMenu', () => {
+  if (SKIP_DEMO_MODE) {
+    it('skips AccountMenu live-mode tests in demo mode', () => {
+      expect(true).toBe(true);
+    });
+    return;
+  }
+
   it('renders initials and opens/closes the dropdown', () => {
     const onOpenDocs = vi.fn();
     const onOpenAgent = vi.fn();

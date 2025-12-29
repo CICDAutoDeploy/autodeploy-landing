@@ -9,6 +9,19 @@ export const AGENT_APP_URL =
 // Base for legacy MCP v1 endpoints (tools + pipeline_* routes)
 export const MCP_V1_BASE_URL = `${API_BASE_URL}/mcp/v1`;
 
+// Landing mode controls whether the marketing SPA exposes real login/app entry
+// points, or runs in a "demo" configuration with limited interactivity.
+//
+// Valid values:
+// - "demo" (default) – hide login/agent links; show docs-focused messaging.
+// - "live" – enable full auth + agent entry points.
+export type LandingMode = 'demo' | 'live';
+
+const rawLandingMode = (import.meta.env.VITE_LANDING_MODE as LandingMode | undefined) ?? 'demo';
+
+export const LANDING_MODE: LandingMode = rawLandingMode === 'live' ? 'live' : 'demo';
+export const IS_DEMO_MODE = LANDING_MODE === 'demo';
+
 export type BannerTone = 'info' | 'success' | 'warning' | 'error';
 
 export type SystemBannerPayload = {
@@ -414,9 +427,9 @@ async function callMcpToolInternal<TData = unknown>(
     | McpV1ErrorEnvelope
     | Record<string, unknown>;
 
-  const successFlag = (payload as McpV1SuccessEnvelope<TData>).success;
+  const successFlag = (payload as McpV1SuccessEnvelope<TData>).success === true;
 
-  if (!res.ok || successFlag === false) {
+  if (!res.ok || !successFlag) {
     const err = payload as McpV1ErrorEnvelope | Record<string, unknown>;
     const errorObject = (err as McpV1ErrorEnvelope).error;
     const message =

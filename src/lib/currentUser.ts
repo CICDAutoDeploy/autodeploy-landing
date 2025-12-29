@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchCurrentUser } from "./api";
+import { fetchCurrentUser, IS_DEMO_MODE } from "./api";
 
 export type CurrentUser = {
   /** Whether the user is authenticated */
@@ -33,6 +33,13 @@ export function useCurrentUser(): CurrentUser {
   const [user, setUser] = useState<CurrentUser>(ANONYMOUS_USER);
 
   useEffect(() => {
+    // In demo mode we intentionally skip hitting `/api/me` and always present
+    // an anonymous user. This keeps the marketing surface self-contained when
+    // the backend or auth flows are not live yet.
+    if (IS_DEMO_MODE) {
+      return;
+    }
+
     let cancelled = false;
 
     void (async () => {
