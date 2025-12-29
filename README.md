@@ -29,8 +29,8 @@ Setting up CI/CD pipelines is often slow, error‑prone, and inconsistent across
   - Account menu dropdown is anchored to the avatar, closes on click-away / `Esc`, and focuses the first item on open
   - Desktop docs search pill stays visible while the inline search menu is open
 - Top-of-page banner system for Pro upsell and system-wide notices
-- Admin Console page for managing system banners and admin users
-- **MCP-backed live demos** on the home page “How AutoDeploy works” section, showing repo_reader and pipeline_history results when connected to the backend
+- Admin Console page for managing system banners, user roles, and Pro access
+- Mock, self-contained demos on the home page “How AutoDeploy works” section (sample repos + template picker, before/after pipeline comparison) that no longer depend on live MCP calls
 
 ---
 

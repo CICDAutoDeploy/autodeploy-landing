@@ -282,9 +282,9 @@ A small UX follow-up was made to polish the navbar overlays:
 
 ---
 
-## Update: MCP v1 Demos and Typed Helpers (Marketing Site)
+### Update: MCP v1 Demos and Typed Helpers (Marketing Site)
 
-This follow-up adds a thin but functional bridge between the marketing/docs SPA and the AutoDeploy backend’s MCP v1 surface.
+This follow-up originally added a thin but functional bridge between the marketing/docs SPA and the AutoDeploy backend’s MCP v1 surface. The latest iteration keeps the typed helpers but replaces the live home-page demos with mock, self-contained experiences.
 
 ### What’s new
 
@@ -302,18 +302,17 @@ This follow-up adds a thin but functional bridge between the marketing/docs SPA 
     - `fetchPipelineHistory()`, `rollbackPipeline()`, and `commitPipeline()` – wrappers around `/mcp/v1/pipeline_history`, `/mcp/v1/pipeline_rollback`, and `/mcp/v1/pipeline_commit` using the v1 envelopes.
     - Typed wrappers: `mcpListRepos()` / `mcpGetRepo()` (repo_reader), `mcpGeneratePipeline()` (pipeline_generator), `mcpListAwsRoles()` / `mcpListJenkinsJobs()` (oidc_adapter).
 
-- **Home page MCP demo panel**
-  - The “How AutoDeploy works” section now includes a **Demo** button.
-  - Clicking "Demo" toggles an inline panel directly under the header (above the step-by-step explanation) that wires up:
-    - `McpRepoListDemo` – calls `mcpListRepos()`/`repo_reader` and shows up to three repositories visible to the current session.
-    - `PipelineHistoryDemo` – lets a user enter `owner/repo` and calls `fetchPipelineHistory()` to show the most recent stored pipeline versions.
-  - When the backend is not running or the user/session lacks access, both demos fall back to explanatory copy instead of erroring.
+- **Home page MCP demo panel (now mock-only)**
+  - The “How AutoDeploy works” section still includes a **Demo** button, but the content is now static:
+    - `McpRepoListDemo` renders a **sample org overview** and a **pipeline template picker** backed by static data instead of calling `repo_reader`.
+    - `PipelineHistoryDemo` shows a **basic vs AutoDeploy-tuned pipeline** diff plus a checklist of best practices, without calling `pipeline_history`.
+  - This keeps the UX illustrative while avoiding flaky or slow live calls from the marketing surface.
 
 - **Backend GitHub Actions docs integration**
-  - The backend docs page for GitHub Actions (`BackendGithubActions`) now embeds the same `McpRepoListDemo` and `PipelineHistoryDemo` components beneath the MCP adapter and workflow sections.
-  - This gives reviewers and users a direct way to hit MCP v1 endpoints from the docs UI when testing end-to-end flows.
+  - The backend docs page for GitHub Actions (`BackendGithubActions`) still embeds the same `McpRepoListDemo` and `PipelineHistoryDemo` components beneath the MCP adapter and workflow sections.
+  - Those embeds now show the same mock data, so docs remain useful even when the backend or MCP stack isn’t available.
 
 ### Notes for reviewers
 
-- All new MCP calls are defensive (envelope-aware, null-safe) and use `credentials: 'include'` so they respect the existing `mcp_session` cookie.
-- The marketing SPA remains safe to host independently: when the backend is unreachable, the demos degrade gracefully without blocking the rest of the page.
+- The marketing SPA no longer depends on `mcpListRepos` / `fetchPipelineHistory` for the home-page demos; all interactions in that panel are driven by static data.
+- The typed MCP helpers remain available for future in-app dashboards or more advanced docs pages that need real backend data.

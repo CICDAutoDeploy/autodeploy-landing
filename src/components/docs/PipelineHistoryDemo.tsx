@@ -1,114 +1,156 @@
 import { useState } from "react";
-import { fetchPipelineHistory, type PipelineVersion } from "../../lib/api";
 
-/**
- * Docs-only demo that lets a reader query pipeline history for a given repo
- * via the MCP v1 `/mcp/v1/pipeline_history` endpoint.
- */
-export default function PipelineHistoryDemo() {
-  const [repo, setRepo] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [versions, setVersions] = useState<PipelineVersion[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+const BASIC_PIPELINE_YAML = `name: basic-ci\n\non:\n  push:\n    branches: [ main ]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '20'\n      - run: npm install\n      - run: npm test\n`;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!repo.trim()) return;
+const AUTODEPLOY_PIPELINE_YAML = `name: autodeploy-ci\n\non:\n  push:\n    branches: [ main ]\n  pull_request:\n    branches: [ main ]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    timeout-minutes: 15\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '20'\n          cache: 'npm'\n      - run: npm ci\n      - run: npm test\n\n  deploy:\n    if: github.ref == 'refs/heads/main' && github.event_name == 'push'\n    needs: test\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Deploy with AutoDeploy\n        run: ./scripts/deploy.sh\n`;
 
-    setError(null);
-    setVersions(null);
-    setLoading(true);
+type ChecklistItem = {
+  label: string;
+  status: "good" | "warn" | "missing";
+};
 
-    try {
-      const rows = await fetchPipelineHistory({
-        repoFullName: repo.trim(),
-        limit: 5,
-      });
-      setVersions(rows);
-    } catch (err) {
-      console.error("PipelineHistoryDemo error", err);
-      setError("Failed to load pipeline history.");
-    } finally {
-      setLoading(false);
-    }
+const BEFORE_CHECKLIST: ChecklistItem[] = [
+  {
+    label: "Runs tests on main branch only",
+    status: "good",
+  },
+  {
+    label: "No pull request validation",
+    status: "missing",
+  },
+  {
+    label: "No dependency caching",
+    status: "missing",
+  },
+  {
+    label: "No explicit deploy step or rollback story",
+    status: "missing",
+  },
+];
+
+const AFTER_CHECKLIST: ChecklistItem[] = [
+  {
+    label: "Tests run on pushes and pull requests",
+    status: "good",
+  },
+  {
+    label: "Node version + npm cache configured for faster builds",
+    status: "good",
+  },
+  {
+    label: "Deploy job gated on green tests on main",
+    status: "good",
+  },
+  {
+    label: "Structured deploy step ready for rollback hooks",
+    status: "warn",
+  },
+];
+
+function ChecklistBadge({ status }: { status: ChecklistItem["status"] }) {
+  if (status === "good") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        Good
+      </span>
+    );
   }
+
+  if (status === "warn") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-200">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+        Needs attention
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold text-red-200">
+      <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+      Missing
+    </span>
+  );
+}
+
+export default function PipelineHistoryDemo() {
+  const [view, setView] = useState<"before" | "after">("before");
+
+  const yaml = view === "before" ? BASIC_PIPELINE_YAML : AUTODEPLOY_PIPELINE_YAML;
+  const checklist = view === "before" ? BEFORE_CHECKLIST : AFTER_CHECKLIST;
 
   return (
     <div className="not-prose mt-4 mb-8">
       <div className="rounded-2xl border border-slate-600/80 bg-slate-900/60 px-4 py-3 text-xs text-slate-100 shadow-glass">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300 mb-2">
-          Live example: pipeline_history
+          Example: pipeline health & before/after
         </p>
         <p className="text-slate-300/80 mb-3">
-          Enter a repository in <code className="text-[11px]">owner/repo</code> format and AutoDeploy
-          will query stored pipeline versions via
-          <code className="ml-1 text-[11px]">/mcp/v1/pipeline_history</code>.
+          Instead of calling live <code className="text-[11px]">/mcp/v1/pipeline_history</code>, this
+          mock demo compares a basic pipeline with an AutoDeploy-tuned version and highlights best
+          practices.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 mb-3">
-          <input
-            type="text"
-            value={repo}
-            onChange={(e) => setRepo(e.target.value)}
-            placeholder="owner/repo (must have at least one committed pipeline)"
-            className="flex-1 rounded-md border border-white/15 bg-black/40 px-2 py-1.5 text-[11px] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/70"
-          />
+        <div className="inline-flex rounded-full border border-white/10 bg-black/40 p-0.5 text-[11px] mb-3">
           <button
-            type="submit"
-            disabled={loading || !repo.trim()}
-            className="inline-flex items-center justify-center rounded-md border border-emerald-400/70 bg-emerald-500/20 px-3 py-1.5 text-[11px] font-semibold text-emerald-50 hover:bg-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
+            onClick={() => setView("before")}
+            className={`px-3 py-1 rounded-full transition-colors ${
+              view === "before"
+                ? "bg-white/10 text-slate-100"
+                : "text-slate-400 hover:text-slate-100"
+            }`}
           >
-            {loading ? "Loading…" : "Load history"}
+            Basic pipeline
           </button>
-        </form>
+          <button
+            type="button"
+            onClick={() => setView("after")}
+            className={`px-3 py-1 rounded-full transition-colors ${
+              view === "after"
+                ? "bg-white/10 text-slate-100"
+                : "text-slate-400 hover:text-slate-100"
+            }`}
+          >
+            AutoDeploy tuned
+          </button>
+        </div>
 
-        {error && (
-          <p className="text-slate-300/80 mb-1">
-            {error} This is expected if you&apos;re not signed in, GitHub access is missing, or no
-            pipeline history exists yet for that repo.
-          </p>
-        )}
-
-        {versions && (
-          <div className="space-y-1.5">
-            {versions.length === 0 ? (
-              <p className="text-slate-300/80">
-                No pipeline versions were found for this repo/branch/path combination.
+        <div className="grid gap-3 md:grid-cols-2 items-start">
+          <div className="rounded-md border border-slate-700/80 bg-black/50 max-h-64 overflow-auto">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-slate-700/80">
+              <p className="text-[10px] font-semibold text-slate-200">
+                {view === "before" ? "Basic GitHub Actions workflow" : "Improved workflow"}
               </p>
-            ) : (
-              <>
-                <p className="text-slate-300/90">
-                  Showing the {versions.length} most recent versions stored in
-                  <code className="ml-1 text-[11px]">pipeline_versions</code>.
-                </p>
-                <ul className="space-y-1 max-h-40 overflow-y-auto pr-1">
-                  {versions.map((v) => (
-                    <li
-                      key={v.id}
-                      className="border border-white/5 rounded-md px-2 py-1 bg-black/30 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-1 text-[11px]">
-                          <span className="font-mono text-emerald-200 truncate max-w-[14rem]">
-                            {v.workflow_path}
-                          </span>
-                          <span className="text-slate-400">on</span>
-                          <span className="font-mono text-slate-200">{v.branch}</span>
-                          <span className="text-slate-500">·</span>
-                          <span className="text-slate-400">source:</span>
-                          <span className="text-slate-200">{v.source}</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500 truncate">
-                          {new Date(v.created_at).toLocaleString()}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+              <span className="text-[10px] text-slate-500">YAML preview</span>
+            </div>
+            <pre className="text-[10px] leading-snug whitespace-pre px-3 py-2 font-mono text-slate-100">
+              {yaml}
+            </pre>
           </div>
-        )}
+
+          <div className="space-y-2">
+            <p className="text-[11px] font-semibold text-slate-200">
+              Pipeline health checklist
+            </p>
+            <ul className="space-y-1.5">
+              {checklist.map((item) => (
+                <li
+                  key={item.label}
+                  className="flex items-start justify-between gap-2 rounded-md border border-white/5 bg-black/30 px-2 py-1.5"
+                >
+                  <p className="text-[10px] text-slate-100 pr-2">{item.label}</p>
+                  <ChecklistBadge status={item.status} />
+                </li>
+              ))}
+            </ul>
+            <p className="text-[10px] text-slate-500">
+              AutoDeploy starts from your existing workflow and incrementally adds checks, caching,
+              and safer deploy steps4without forcing a full rewrite.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

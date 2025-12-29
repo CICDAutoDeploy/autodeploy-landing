@@ -240,6 +240,27 @@ export async function setUserAdmin(userId: string, makeAdmin: boolean): Promise<
   return user;
 }
 
+/** Toggle a user's Pro plan via POST /users/pro. */
+export async function setUserPro(userId: string, makePro: boolean): Promise<AdminUser> {
+  const res = await fetch(`${API_BASE_URL}/users/pro`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ user_id: userId, make_pro: makePro }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`setUserPro failed: ${res.status} ${text}`);
+  }
+
+  const payload = (await res.json()) as { user: AdminUser } | AdminUser;
+  const user = (payload as { user: AdminUser }).user ?? (payload as AdminUser);
+  return user;
+}
+
 export type ApiSessionUser = {
   user_id?: string;
   id?: string;

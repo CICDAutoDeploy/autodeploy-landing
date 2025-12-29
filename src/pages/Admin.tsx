@@ -4,7 +4,7 @@ import {
   setSystemBanner,
   clearSystemBanner,
   fetchAdminUsers,
-  setUserAdmin,
+  setUserPro,
   type BannerTone,
   type SystemBannerPayload,
   type AdminUser,
@@ -119,21 +119,23 @@ export default function AdminPage() {
     }
   }
 
-  async function handleToggleAdmin(user: AdminUser) {
+  async function handleTogglePro(user: AdminUser) {
     setUsersError(null);
     setUpdatingUserId(user.id);
+
+    const willBePro = !(user.plan === "pro" || user.beta_pro_granted === true);
+
     try {
-      const updated = await setUserAdmin(user.id, user.role !== "SYSTEM_ADMIN");
+      const updated = await setUserPro(user.id, willBePro);
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
-      const becameAdmin = updated.role === "SYSTEM_ADMIN";
       window.showToast?.(
-        becameAdmin ? "User promoted to admin" : "Admin demoted to user",
+        willBePro ? "User upgraded to Pro" : "Pro access removed",
         "success",
       );
     } catch (err) {
-      console.error("setUserAdmin error", err);
-      setUsersError("Failed to update user role.");
-      window.showToast?.("Failed to update user role", "error");
+      console.error("setUserPro error", err);
+      setUsersError("Failed to update Pro status.");
+      window.showToast?.("Failed to update Pro status", "error");
     } finally {
       setUpdatingUserId(null);
     }
@@ -162,7 +164,7 @@ export default function AdminPage() {
             <div>
               <h2 className="text-lg font-semibold text-white">Users &amp; roles</h2>
               <p className="text-xs text-slate-400">
-                View recent users and promote or demote system admins.
+                View recent users and manage Pro access.
               </p>
             </div>
             {usersLoading && (
@@ -231,18 +233,18 @@ export default function AdminPage() {
                           <button
                             type="button"
                             disabled={isUpdating}
-                            onClick={() => handleToggleAdmin(user)}
+                            onClick={() => handleTogglePro(user)}
                             className={`inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-[11px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
-                              isAdmin
+                              isPro
                                 ? "border-slate-500/70 bg-slate-700/40 text-slate-100 hover:bg-slate-700/70"
                                 : "border-amber-400/70 bg-amber-500/10 text-amber-100 hover:bg-amber-500/20"
                             }`}
                           >
                             {isUpdating
                               ? "Updating…"
-                              : isAdmin
-                              ? "Remove admin"
-                              : "Make admin"}
+                              : isPro
+                              ? "Remove pro"
+                              : "Make pro"}
                           </button>
                         </td>
                       </tr>

@@ -146,18 +146,6 @@ export default function App() {
         </div>
       )}
 
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg font-medium z-40 ${
-            toast.type === "success"
-              ? "bg-emerald-500 text-emerald-50"
-              : "bg-red-500 text-red-50"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
-
       <Navbar page={page} setPage={setPage} hasBanner={!!banner} />
 
       {page === "home" && (
@@ -182,6 +170,18 @@ export default function App() {
       <BackToTop enabled={page === "home"} />
       {/* Docs-specific back-to-top that targets the middle scrollable column. */}
       <BackToTop enabled={page === "docs"} targetId="docs-scroll" />
+
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg font-medium z-[9999] ${
+            toast.type === "success"
+              ? "bg-emerald-500 text-emerald-50"
+              : "bg-red-500 text-red-50"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }
