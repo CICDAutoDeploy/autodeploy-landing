@@ -40,19 +40,37 @@ export default function McpStatusCallout() {
     };
   }, []);
 
+  const hasError = !loading && !!error;
+
   return (
     <div className="not-prose mb-8">
-      <div className="rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 shadow-glass">
+      <div
+        className={`rounded-2xl px-4 py-3 shadow-glass border ${
+          hasError
+            ? "border-slate-600/70 bg-slate-900/80"
+            : "border-emerald-400/40 bg-emerald-500/10"
+        }`}
+      >
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-200 text-sm font-semibold">
+          <div
+            className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
+              hasError
+                ? "bg-slate-700 text-slate-200"
+                : "bg-emerald-500/20 text-emerald-200"
+            }`}
+          >
             MCP
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <p className="text-sm font-semibold text-emerald-50">
+              <p
+                className={`text-sm font-semibold ${
+                  hasError ? "text-slate-100" : "text-emerald-50"
+                }`}
+              >
                 Live MCP v1 status
               </p>
-              {status?.deprecated && (
+              {!hasError && status?.deprecated && (
                 <span className="inline-flex items-center rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100">
                   Deprecated
                 </span>
@@ -60,16 +78,13 @@ export default function McpStatusCallout() {
             </div>
 
             {loading && (
-              <p className="text-xs text-emerald-100/80">
+              <p className="text-xs text-slate-200/80">
                 Checking /mcp/v1/status on the backend...
               </p>
             )}
 
             {!loading && error && (
-              <p className="text-xs text-emerald-100/80">
-                {error} This is expected if the AutoDeploy backend is not running or you&apos;re
-                viewing the static marketing site without a session.
-              </p>
+              <p className="text-xs text-slate-300/90">{error}</p>
             )}
 
             {!loading && !error && status && (
