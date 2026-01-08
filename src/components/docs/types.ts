@@ -1,0 +1,17 @@
+export type DocSlug =
+  | "intro"
+  | "installation"
+  | "configuration"
+  | "quickstart"
+  | "pipelines"
+  | "mcp"
+  | "environments"
+  | "secrets"
+  | "webhooks"
+  | "github-actions"
+  | "gitlab-ci"
+  | "slack"
+  | "clouds"
+  | "auth-api"
+  | "deployments-api"
+  | "logs-api";

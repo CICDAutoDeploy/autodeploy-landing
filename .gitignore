@@ -25,4 +25,4 @@ dist-ssr
 
 # Env File
 .env
-WARP.md
+readme/

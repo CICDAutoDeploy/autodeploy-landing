@@ -1,8 +1,34 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Navbar from '../components/Navbar';
 
 // Provide minimal globals used by Navbar in the JSDOM test environment
+let originalMatchMedia: typeof window.matchMedia | undefined;
+
+beforeAll(() => {
+  originalMatchMedia = window.matchMedia;
+  // Basic matchMedia mock for JSDOM
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).matchMedia = (query: string) => {
+    return {
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    } as MediaQueryList;
+  };
+});
+
+afterAll(() => {
+  if (originalMatchMedia) {
+    window.matchMedia = originalMatchMedia;
+  }
+});
+
 beforeEach(() => {
   // jsdom doesn't implement scrollTo by default
   window.scrollTo = vi.fn();
@@ -39,7 +65,7 @@ describe('Navbar', () => {
     expect(screen.getByText('AutoDeploy')).toBeInTheDocument();
     expect(screen.getAllByText('Home')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Features')[0]).toBeInTheDocument();
-    expect(screen.getAllByText('How it works')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Docs')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Team')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Contact')[0]).toBeInTheDocument();
   });

@@ -1,78 +1,73 @@
-import { useEffect, useState } from "react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useEffect, useRef, useState } from "react";
+import { Bars3Icon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useCurrentUser } from "../lib/currentUser";
+import { openAgentApp } from "../lib/api";
+import { DocsSearchDialog } from "./navbar/DocsSearchDialog";
+import { DocsSearchMenu } from "./navbar/DocsSearchMenu";
+import { DesktopNavLinks } from "./navbar/DesktopNavLinks";
+import { MobileMenu } from "./navbar/MobileMenu";
+import { docsSections, POPULAR_DOCS } from "./navbar/docsConfig";
+import { useActiveSection } from "./navbar/useActiveSection";
+import { useDocsSearch } from "./navbar/useDocsSearch";
+import { getUserDisplay } from "./navbar/userDisplay";
+import { BrandButton } from "./navbar/BrandButton";
+import { AccountMenu } from "./navbar/AccountMenu";
 
-type Page = "home" | "privacy" | "terms" | "contact";
 
+export type Page = "home" | "privacy" | "terms" | "contact" | "docs" | "admin";
 type NavbarProps = {
   page: Page;
   setPage: (page: Page) => void;
+  /**
+   * When true, the navbar is offset to sit below the global banner.
+   */
+  hasBanner?: boolean;
 };
 
-export default function Navbar({ page, setPage }: NavbarProps) {
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+export default function Navbar({ page, setPage, hasBanner = false }: NavbarProps) {
+  const user = useCurrentUser();
+  const { isAuthenticated, displayName, displayEmail, initials, isPro, isAdmin } =
+    getUserDisplay(user);
 
-  const [activeSection, setActiveSection] = useState<
-    "home" | "features" | "how" | "team"
-  >("home");
+  const { activeSection, scrollToSection } = useActiveSection({ page });
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : false,
+  );
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    docsSearchOpen,
+    docsSearchQuery,
+    setDocsSearchQuery,
+    recentDocs,
+    filteredDocs,
+    openDocsSearch,
+    closeDocsSearch,
+    navigateToDoc,
+  } = useDocsSearch({ page, setPage });
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener("change", handler);
+    setIsDesktop(mql.matches);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
-    if (page !== "home") {
-      setTimeout(() => setActiveSection("home"), 0);
-      return;
-    }
-
-    const sectionIds: Array<"features" | "how" | "team"> = [
-      "features",
-      "how",
-      "team",
-    ];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // If we're near the top of the page, prefer Home
-            if (window.scrollY < 100) {
-              setActiveSection("home");
-            } else {
-              setActiveSection(entry.target.id as any);
-            }
-          }
-        });
-      },
-      {
-        rootMargin: "-40% 0px -50% 0px",
-        threshold: 0,
-      }
-    );
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [page]);
-
-  useEffect(() => {
-    if (page !== "home") return;
-
-    const handleScroll = () => {
-      if (window.scrollY < 80) {
-        setActiveSection("home");
-      }
+    if (!docsSearchOpen || !isDesktop) return;
+    const handleClickAway = (e: MouseEvent) => {
+      if (!popoverRef.current) return;
+      if (popoverRef.current.contains(e.target as Node)) return;
+      closeDocsSearch();
     };
+    document.addEventListener("mousedown", handleClickAway);
+    return () => document.removeEventListener("mousedown", handleClickAway);
+  }, [docsSearchOpen, isDesktop, closeDocsSearch]);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [page]);
 
   useEffect(() => {
     // Close the mobile menu when the page changes, if it's currently open.
@@ -81,228 +76,136 @@ export default function Navbar({ page, setPage }: NavbarProps) {
     return () => clearTimeout(t);
   }, [page]);
 
+
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 bg-white border-b border-border">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo / Brand */}
-        <button
-          onClick={() => {
-            if (page !== "home") {
-              setPage("home");
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }, 0);
-            } else {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-          }}
-          className="text-xl font-extrabold tracking-tight text-text"
-        >
-          AutoDeploy
-        </button>
+    <nav
+      className={`fixed inset-x-0 border-b border-white/15 bg-black/40 backdrop-blur z-40 ${
+        hasBanner ? "top-10" : "top-0"
+      }`}
+    >
+      <div className="w-full px-3 sm:px-4 lg:px-8 py-1 md:py-2">
+        <div className="w-full flex items-center gap-3 md:gap-4 rounded-full border border-white/15 bg-white/5 backdrop-blur shadow-glass px-3 lg:px-6 py-1 md:py-1.5">
+          {/* Left: logo / brand */}
+          <div className="flex-1 flex items-center min-w-0">
+            <BrandButton page={page} setPage={setPage} />
+          </div>
 
-        {/* Navigation */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <button
-            onClick={() => {
-              if (page !== "home") {
-                setPage("home");
-                setTimeout(() => {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }, 0);
-              } else {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }
-            }}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
-              page === "home" && activeSection === "home"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
-            }`}
-          >
-            Home
-          </button>
-          <button
-            onClick={() => {
-              if (page !== "home") {
-                setPage("home");
-                setTimeout(() => scrollToSection("features"), 0);
-              } else {
-                scrollToSection("features");
-              }
-            }}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
-              activeSection === "features"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
-            }`}
-          >
-            Features
-          </button>
-          <button
-            onClick={() => {
-              if (page !== "home") {
-                setPage("home");
-                setTimeout(() => scrollToSection("how"), 0);
-              } else {
-                scrollToSection("how");
-              }
-            }}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
-              activeSection === "how"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
-            }`}
-          >
-            How it works
-          </button>
-          <button
-            onClick={() => {
-              if (page !== "home") {
-                setPage("home");
-                setTimeout(() => scrollToSection("team"), 0);
-              } else {
-                scrollToSection("team");
-              }
-            }}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
-              activeSection === "team"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
-            }`}
-          >
-            Team
-          </button>
-          <button
-            onClick={() => setPage("contact")}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
-              page === "contact"
-                ? "bg-blue-100 text-blue-600"
-                : "text-text hover:bg-blue-100 hover:text-blue-600"
-            }`}
-          >
-            Contact
-          </button>
-        </div>
-        <button
-          onClick={() => setMobileOpen((open) => !open)}
-          className="md:hidden p-2 rounded-md hover:bg-surface-muted"
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? (
-            <XMarkIcon className="h-6 w-6" />
-          ) : (
-            <Bars3Icon className="h-6 w-6" />
-          )}
-        </button>
-      </div>
-      {(
-        <div
-          className={`md:hidden fixed top-16 right-4 z-40 bg-white border border-border shadow-xl rounded-2xl w-fit min-w-[1rem] overflow-hidden transform transition-all duration-300 ease-out ${
-            mobileOpen
-              ? "translate-x-0 opacity-100"
-              : "translate-x-8 opacity-0 pointer-events-none"
-          }`}
-        >
-          <div className="px-6 py-5 flex flex-col gap-4 text-sm font-medium items-end text-right text-text whitespace-nowrap">
+        {/* Center: primary navigation (desktop) / search (mobile) */}
+        <div className="flex items-center justify-center flex-none lg:flex-1 min-w-0">
+          <DesktopNavLinks
+            page={page}
+            activeSection={activeSection}
+            setPage={setPage}
+            scrollToSection={scrollToSection}
+          />
+
+          {/* Mobile search pill */}
             <button
-              onClick={() => {
-                setMobileOpen(false);
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0);
-                } else {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "home" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
-              }`}
+              type="button"
+              onClick={openDocsSearch}
+              className="lg:hidden inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200/80 shadow-sm"
             >
-              Home
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
+                <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+              </span>
+              <span className="whitespace-nowrap">Search docs...</span>
             </button>
+          </div>
+
+          {/* Right: docs search (desktop) + account menu + mobile toggle */}
+          <div className="flex-1 flex items-center justify-end gap-2 sm:gap-3 relative">
+            <div className="hidden lg:block relative" ref={popoverRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (docsSearchOpen) {
+                    closeDocsSearch();
+                  } else {
+                    openDocsSearch();
+                  }
+                }}
+                aria-haspopup="dialog"
+                aria-expanded={docsSearchOpen}
+                className={`inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs shadow-sm hover:bg-white/10 ${
+                  docsSearchOpen ? "bg-white/10 text-slate-100" : "bg-white/5 text-slate-200/80"
+                }`}
+              >
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-slate-200">
+                  <MagnifyingGlassIcon className="h-3.5 w-3.5" />
+                </span>
+                <span className="whitespace-nowrap">Search docs...</span>
+              </button>
+
+              {docsSearchOpen && isDesktop && (
+                <div className="absolute right-0 mt-2 w-[420px] z-50">
+                  <DocsSearchMenu
+                    query={docsSearchQuery}
+                    onQueryChange={setDocsSearchQuery}
+                    recentDocs={recentDocs}
+                    popularDocs={POPULAR_DOCS}
+                    filteredDocs={filteredDocs}
+                    onSelectDoc={navigateToDoc}
+                    onClose={closeDocsSearch}
+                    inputId="docs-search-inline-input"
+                  />
+                </div>
+              )}
+            </div>
+
+            <AccountMenu
+              displayName={displayName}
+              displayEmail={displayEmail}
+              initials={initials}
+              isAuthenticated={isAuthenticated}
+              isPro={isPro}
+              isAdmin={isAdmin}
+              onOpenDocs={() => setPage("docs")}
+              onOpenAgent={openAgentApp}
+              onOpenAdmin={isAdmin ? () => setPage("admin") : undefined}
+            />
 
             <button
-              onClick={() => {
-                setMobileOpen(false);
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => scrollToSection("features"), 0);
-                } else {
-                  scrollToSection("features");
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "features" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
-              }`}
+              onClick={() => setMobileOpen((open) => !open)}
+              className="lg:hidden p-2 rounded-md hover:bg-white/10 text-slate-100"
+              aria-label="Toggle menu"
             >
-              Features
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileOpen(false);
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => scrollToSection("how"), 0);
-                } else {
-                  scrollToSection("how");
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "how" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
-              }`}
-            >
-              How it works
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileOpen(false);
-                if (page !== "home") {
-                  setPage("home");
-                  setTimeout(() => scrollToSection("team"), 0);
-                } else {
-                  scrollToSection("team");
-                }
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                activeSection === "team" && page === "home"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
-              }`}
-            >
-              Team
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileOpen(false);
-                setPage("contact");
-              }}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
-                page === "contact"
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-text hover:bg-blue-100 hover:text-blue-600"
-              }`}
-            >
-              Contact
+              {mobileOpen ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
-      )}
+      </div>
+      {/* Mobile / desktop docs search dialog */}
+      <DocsSearchDialog
+        open={docsSearchOpen && !isDesktop}
+        query={docsSearchQuery}
+        onQueryChange={setDocsSearchQuery}
+        recentDocs={recentDocs}
+        popularDocs={POPULAR_DOCS}
+        filteredDocs={filteredDocs}
+        onSelectDoc={navigateToDoc}
+        onClose={closeDocsSearch}
+      />
+
+      <MobileMenu
+        page={page}
+        mobileOpen={mobileOpen}
+        activeSection={activeSection}
+        setPage={setPage}
+        scrollToSection={scrollToSection}
+        docsSections={docsSections}
+        setMobileOpen={setMobileOpen}
+      />
       {mobileOpen && (
         <div
-          className="md:hidden fixed inset-0 z-30 bg-white/80"
+          className="lg:hidden fixed inset-0 z-30 bg-black/60"
           onClick={() => setMobileOpen(false)}
         />
       )}
+
     </nav>
   );
 }

@@ -24,6 +24,13 @@ Setting up CI/CD pipelines is often slow, error‑prone, and inconsistent across
 - Hero section, feature breakdown, team section, and CTA
 - Configurable branding for AutoDeploy
 - “Join the Waitlist” button routing to `/waitlist` (Supabase‑backed form coming next)
+- Auth-aware navbar showing account state, Pro/Admin badges, and a `Launch AutoDeploy` entry point
+- Navbar overlay polish:
+  - Account menu dropdown is anchored to the avatar, closes on click-away / `Esc`, and focuses the first item on open
+  - Desktop docs search pill stays visible while the inline search menu is open
+- Top-of-page banner system for Pro upsell and system-wide notices
+- Admin Console page for managing system banners, user roles, and Pro access
+- Mock, self-contained demos on the home page “How AutoDeploy works” section (sample repos + template picker, before/after pipeline comparison) that no longer depend on live MCP calls
 
 ---
 
@@ -34,23 +41,22 @@ autodeploy-landing/
 │  └─ team/                 # Team headshots
 ├─ src/
 │  ├─ components/
-│  │  ├─ CTA.tsx
-│  │  ├─ Features.tsx
-│  │  ├─ Footer.tsx
-│  │  ├─ Hero.tsx
-│  │  ├─ HowItWorks.tsx
-│  │  ├─ Navbar.tsx
-│  │  ├─ ProblemSolution.tsx
-│  │  └─ Team.tsx
+│  │  ├─ Footer.tsx          # Global footer
+│  │  ├─ Navbar.tsx          # Top-level navbar that wires subcomponents/hooks
+│  │  ├─ navbar/             # Extracted navbar components & hooks (DocsSearchDialog, MobileMenu, etc.)
+│  │  └─ sections/           # Marketing sections (Hero, Features, ProblemSolution, HowItWorks, CTA, Team, BackToTop)
 │  ├─ hooks/
-│  │  └─ useWaitlist.ts     # Shared waitlist logic
+│  │  └─ useWaitlist.ts      # Shared waitlist logic
 │  ├─ pages/
 │  │  ├─ Contact.tsx
 │  │  ├─ Privacy.tsx
-│  │  └─ Terms.tsx
+│  │  ├─ Terms.tsx
+│  │  └─ Admin.tsx           # Admin console for system banners and user management
 │  ├─ lib/
-│  │  └─ supabase.ts
-│  ├─ App.tsx               # App orchestration / routing
+│  │  ├─ supabase.ts         # Supabase client for waitlist
+│  │  ├─ api.ts              # Lightweight REST + auth/admin helpers (health, OAuth, current user, banners, users)
+│  │  └─ currentUser.ts      # useCurrentUser() hook hydrated from backend /api/me
+│  ├─ App.tsx                # App orchestration / routing
 │  ├─ main.tsx              # Entry point
 │  └─ index.css
 ├─ index.html
@@ -103,6 +109,20 @@ http://localhost:5173
 
 ---
 
+## 🧪 Testing
+Run the test suite (Vitest + Testing Library):
+```bash
+npm test
+```
+
+This covers:
+- Navbar behavior (desktop + mobile + docs search)
+- Extracted navbar hooks (`useActiveSection`, `useDocsSearch`)
+- Account menu and brand button
+- Waitlist flow and global toast wiring
+
+---
+
 ## 🔧 Build for Production
 ```bash
 npm run build
@@ -134,6 +154,27 @@ Hosting on:
 - 📄 **Repository:** https://github.com/CICDAutoDeploy/autodeploy-landing
 
 
+## 🔐 Auth, Roles, and Admin Surface
+
+The landing SPA integrates with the AutoDeploy backend's authentication system to show account state and pro/admin status in the navbar and expose a minimal admin surface.
+
+- Backend sets an HTTP-only `mcp_session` cookie after local or GitHub OAuth login.
+- Frontend calls `GET ${VITE_API_BASE_URL}/api/me` (via `fetchCurrentUser()`) to hydrate:
+  - `isAuthenticated`
+  - `name`, `email`
+  - `isPro` – based on backend `plan` and `beta_pro_granted` flags.
+  - `isAdmin` – based on backend `role` (`SYSTEM_ADMIN`).
+- The navbar account menu uses this to:
+  - Swap between "Log in" and "Log out" actions.
+  - Show initials/email for authenticated users.
+  - Render "Pro" / "Admin" badges when applicable.
+  - Provide a `Launch AutoDeploy` entry point (Pro-only) and an **Admin Console** link for admins.
+- The Admin Console page exposes:
+  - A **Users & roles** table powered by `GET /users` and `POST /users/promote`.
+  - A **System banner** editor powered by `GET/POST/DELETE /api/system-banner`.
+
+For more detail, see the docs under `readme/` in this repo and `AUTH.md` / `BACKEND_FLOWS.md` in the backend repo.
+
 ## 🔐 Environment Variables
 
 This project requires a Vite environment file to configure Supabase access.
@@ -145,6 +186,8 @@ Create a file named `.env` in the **root directory** of the project with the fol
 ```
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_API_BASE_URL=http://localhost:3000   # URL of the AutoDeploy backend (for /health, /api/me, OAuth)
+VITE_LANDING_MODE=demo                    # "demo" hides login/app entry; set to "live" on launch
 ```
 
 ### Setup notes
