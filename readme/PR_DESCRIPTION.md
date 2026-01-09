@@ -286,6 +286,8 @@ A small UX follow-up was made to polish the navbar overlays:
 
 This follow-up originally added a thin but functional bridge between the marketing/docs SPA and the AutoDeploy backend’s MCP v1 surface. The latest iteration keeps the typed helpers but replaces the live home-page demos with mock, self-contained experiences.
 
+In addition, the landing SPA now has a **demo vs live mode** toggle controlled by `VITE_LANDING_MODE` so we can safely run the marketing site without exposing real login/app entry points before launch.
+
 ### What’s new
 
 - **Live MCP status callout in docs**
@@ -316,3 +318,4 @@ This follow-up originally added a thin but functional bridge between the marketi
 
 - The marketing SPA no longer depends on `mcpListRepos` / `fetchPipelineHistory` for the home-page demos; all interactions in that panel are driven by static data.
 - The typed MCP helpers remain available for future in-app dashboards or more advanced docs pages that need real backend data.
+- When `VITE_LANDING_MODE=demo`, the account menu shows a "coming soon" message and docs link instead of real auth actions; in `live` mode the full auth-aware behavior remains available.
